@@ -697,5 +697,52 @@ python3 run.py --without=V
 
 The analysis results are stored in the  `${REPO_ROOT}/evaluation/section-6-3-rationality/wo_v/cuklee/log` directory.
 
+Here is a clearer README version:
+
+## 8. Git LFS Download Issue
+
+The Git LFS budget for the account that owns this repository has been exceeded. As a result, downloading some large files may fail during `git lfs pull`.
+
+To clone the repository without downloading the Git LFS objects, run:
+
+```bash
+GIT_LFS_SKIP_SMUDGE=1 git clone <repository-url>
+```
+
+The LFS-tracked paths will contain Git LFS pointer files instead of the actual `.bc` and `.ll` contents. You can restore the required files using either of the following methods.
+
+### Option 1: Regenerate the files
+
+From the repository root directory, run:
+
+```bash
+python3 evaluation/section-6-1-bug-detection/fix_lfs.py
+```
+
+This script regenerates all required LLVM bitcode (`.bc`) and LLVM IR (`.ll`) files, including the files under `example/`.
+
+Depending on your machine, this process may take more than one hour.
+
+### Option 2: Download the files
+
+Download and extract the `large_files.zip` from [this Google Drive Folder](https://drive.google.com/drive/folders/123W8DaDUUhJvgpT_5I8a3vxHXjQwjHUc?usp=drive_link)
+
+Then replace the following directories with the corresponding directories from the extracted archive:
+
+```text
+evaluation/section-6-2-coverage/benchmarks/original/
+evaluation/section-6-2-coverage/benchmarks/cuKLEE-simplified/
+evaluation/section-6-1-bug-detection/benchmarks/
+```
+
+Also replace the four corresponding LFS-tracked files under:
+
+```text
+example/
+```
+
+Make sure that the extracted files preserve the same directory structure and filenames as the files in the repository.
+
+
 
 
