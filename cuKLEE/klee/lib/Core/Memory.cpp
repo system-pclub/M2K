@@ -174,9 +174,52 @@ const UpdateList &ObjectState::getUpdates() const {
   // Constant arrays are created lazily.
   if (!updates.root) {
     static unsigned id = 0;
-    const Array *array = getArrayCache()->CreateArray(
-        "sym_arr" + llvm::utostr(++id), size, false);
-    updates = UpdateList(array, updates.head);
+
+    if (size > 0 && size <= 32 * 16) {
+      flushRangeForRead(0, size);
+
+      // Collect the list of writes, with the oldest writes first.
+      unsigned NumWrites = updates.head ? updates.head->getSize() : 0;
+      std::vector<std::pair<ref<Expr>, ref<Expr>>> Writes(NumWrites);
+      const auto *un = updates.head.get();
+      for (unsigned i = NumWrites; i != 0; un = un->next.get()) {
+        --i;
+        Writes[i] = std::make_pair(un->index, un->value);
+      }
+
+      std::vector<ref<ConstantExpr>> Contents(size);
+      for (unsigned i = 0, e = size; i != e; ++i)
+        Contents[i] = ConstantExpr::create(0, Expr::Int8);
+
+      unsigned Begin = 0, End = Writes.size();
+      for (; Begin != End; ++Begin) {
+        ConstantExpr *Index = dyn_cast<ConstantExpr>(Writes[Begin].first);
+        if (!Index)
+          break;
+
+        ConstantExpr *Value = dyn_cast<ConstantExpr>(Writes[Begin].second);
+        if (!Value)
+          break;
+
+        uint64_t ConcreteIndex = Index->getZExtValue();
+        if (ConcreteIndex >= size)
+          break;
+
+        Contents[ConcreteIndex] = Value;
+      }
+
+      const Array *array = getArrayCache()->CreateArray(
+          "const_arr" + llvm::utostr(++id), size, false, &Contents[0],
+          &Contents[0] + Contents.size());
+      updates = UpdateList(array, 0);
+
+      for (; Begin != End; ++Begin)
+        updates.extend(Writes[Begin].first, Writes[Begin].second);
+    } else {
+      const Array *array = getArrayCache()->CreateArray(
+          "sym_arr" + llvm::utostr(++id), size, false);
+      updates = UpdateList(array, updates.head);
+    }
 
   }
 

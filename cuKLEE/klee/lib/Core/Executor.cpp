@@ -489,7 +489,7 @@ unsigned dumpStates = 0, dumpExecutionTree = 0;
 int KLoopInfo::counter = 0;
 int Executor::kernelConfigCounter = 0;
 static const int largeSymbolSize = 39973;
-static const int loopSymMax = 4;
+static const int loopSymMax = 8;
 
 Executor::Executor(LLVMContext &ctx, const InterpreterOptions &opts,
                    InterpreterHandler *ih)
@@ -14617,7 +14617,7 @@ void Executor::executeMemoryOperation(ExecutionState &state,
           }
           if (isLoadIr && bytes > 1 && bytes <=8 && (!parentFunction || !isMemFuncName(parentFunction->getName().str()))) {
             ref<ReadExpr> readExpr = ReadExpr::extractReadExpr(result);
-            if (readExpr && readExpr->updates.root->name.find("const_arr")!=std::string::npos) {
+            if (readExpr && (readExpr->updates.root->name.find("const_arr")!=std::string::npos || readExpr->updates.root->name.find("sym_arr")!=std::string::npos)) {
               llvm::Type *type = target->inst->getType();
               if (type->isIntegerTy()) {
                 std::string aName = readExpr->updates.root->name;
@@ -14797,7 +14797,7 @@ void Executor::executeMemoryOperation(ExecutionState &state,
         }
         if (isLoadIr && bytes > 1 && bytes <= 8 && (!parentFunction || !isMemFuncName(parentFunction->getName().str()))) {
           ref<ReadExpr> readExpr = ReadExpr::extractReadExpr(result);
-          if (readExpr && readExpr->updates.root->name.find("const_arr")!=std::string::npos) {
+          if (readExpr && (readExpr->updates.root->name.find("const_arr")!=std::string::npos || readExpr->updates.root->name.find("sym_arr")!=std::string::npos)) {
             llvm::Type *type = target->inst->getType();
             if (type->isIntegerTy()) {
               std::string aName = readExpr->updates.root->name;
