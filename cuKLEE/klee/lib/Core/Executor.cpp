@@ -6188,7 +6188,6 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
       ref<Expr> cond = eval(ki, 0, state).value;
       cond = optimizer.optimizeExpr(cond, false);
 
-      
       BasicBlock *currentBlock = bi->getParent();
       auto it = state.loopInfoMap.find(currentBlock);
       bool isSymLoop = false;
@@ -6757,18 +6756,27 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
     ref<Expr> index0 = ConcatExpr::getArrayIndex(left, &array0);
     const Array *array1 = nullptr;
     ref<Expr> index1 = ConcatExpr::getArrayIndex(right, &array1);
+    ref<Expr> add_expr = nullptr;
     if (!index0.isNull()) {
       arrayName = array0->name;
+      add_expr = right;
     } else if (!index1.isNull()) {
       arrayName = array1->name;
+      add_expr = left;
     }
 
     if (!arrayName.empty()) {
       if (state.symbolicArrayMap.find(arrayName) != state.symbolicArrayMap.end()) {
         SymArrayMemoryObject *symmo = state.symbolicArrayMap[arrayName];
         if (symmo->maxVal.isNull()) {
-          bindLocal(ki, state, result);
-          break;
+          if (auto add_expr_con = dyn_cast<ConstantExpr>(add_expr)) {
+            if (add_expr_con->getZExtValue() <= 1) {
+              bindLocal(ki, state, result);
+              break;
+            }
+          }
+          // bindLocal(ki, state, result);
+          // break;
         }
       }
       if (arrayName.find("temp_storage") != std::string::npos) {
@@ -6862,26 +6870,26 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
       break;
     }
 
-    std::string arrayName = "";
-    const Array *array0 = nullptr;
-    ref<Expr> index0 = ConcatExpr::getArrayIndex(left, &array0);
-    const Array *array1 = nullptr;
-    ref<Expr> index1 = ConcatExpr::getArrayIndex(right, &array1);
-    if (!index0.isNull()) {
-      arrayName = array0->name;
-    } else if (!index1.isNull()) {
-      arrayName = array1->name;
-    }
+    // std::string arrayName = "";
+    // const Array *array0 = nullptr;
+    // ref<Expr> index0 = ConcatExpr::getArrayIndex(left, &array0);
+    // const Array *array1 = nullptr;
+    // ref<Expr> index1 = ConcatExpr::getArrayIndex(right, &array1);
+    // if (!index0.isNull()) {
+    //   arrayName = array0->name;
+    // } else if (!index1.isNull()) {
+    //   arrayName = array1->name;
+    // }
 
-    if (!arrayName.empty()) {
-      if (state.symbolicArrayMap.find(arrayName) != state.symbolicArrayMap.end()) {
-        SymArrayMemoryObject *symmo = state.symbolicArrayMap[arrayName];
-        if (symmo->maxVal.isNull()) {
-          bindLocal(ki, state, result);
-          break;
-        }
-      }
-    }
+    // if (!arrayName.empty()) {
+    //   if (state.symbolicArrayMap.find(arrayName) != state.symbolicArrayMap.end()) {
+    //     SymArrayMemoryObject *symmo = state.symbolicArrayMap[arrayName];
+    //     if (symmo->maxVal.isNull()) {
+    //       bindLocal(ki, state, result);
+    //       break;
+    //     }
+    //   }
+    // }
 
     if (const llvm::BinaryOperator *binOp = llvm::dyn_cast<llvm::BinaryOperator>(i)) {
       bool isSigned = binOp->hasNoSignedWrap() || isBinaryOpSigned(i);
@@ -7042,7 +7050,8 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
       if (loopInfo->indexExpr || loopInfo->address) {
         loopInfo->incrIndexName();
       }
-      if (state.kernelConfig.getThreadIdx().x) {
+      if (state.kernelConfig.getThreadIdx().x &&
+          state.addressInLoop.find(loopInfo->indexName) == state.addressInLoop.end()) {
         std::map<ref<Expr>, std::tuple<ExecutionState::MemOp, MemoryObject::MemType, std::string>> addressMap;
         state.addressInLoop[loopInfo->indexName] = addressMap;
       }
@@ -8780,7 +8789,8 @@ void Executor::updateStates(ExecutionState *current) {
        it != ie; ++it) {
     ExecutionState *es = *it;
     std::set<ExecutionState*>::iterator it2 = states.find(es);
-    assert(it2!=states.end());
+    if (it2 == states.end())
+      continue;
     states.erase(it2);
     std::map<ExecutionState*, std::vector<SeedInfo> >::iterator it3 = 
       seedMap.find(es);
@@ -9125,6 +9135,10 @@ std::string Executor::getAddressInfo(ExecutionState &state,
 
 void Executor::terminateState(ExecutionState &state,
                               StateTerminationType reason) {
+  if (std::find(removedStates.begin(), removedStates.end(), &state) !=
+      removedStates.end())
+    return;
+
   if (replayKTest && replayPosition!=replayKTest->numObjects) {
     klee_warning_once(replayKTest,
                       "replay did not consume all objects in test input.");
@@ -9742,6 +9756,46 @@ void Executor::callExternalFunction(ExecutionState &state, KInstruction *target,
     return;
 
   StringRef externalName = callable->getName();
+  auto hasUnsafeHostString = [&](ref<Expr> stringExpr) {
+    ObjectPair stringObject;
+    bool success = false;
+    if (!state.addressSpace.resolveOne(state, solver.get(), stringExpr,
+                                       stringObject, success) ||
+        !success || stringObject.first->size < 16)
+      return true;
+
+    ref<Expr> dataPtr = stringObject.second->read(0, Expr::Int64);
+    auto dataPtrCE = dyn_cast<ConstantExpr>(dataPtr);
+    if (!dataPtrCE)
+      return true;
+
+    uint64_t dataPtrValue = dataPtrCE->getZExtValue();
+    if (dataPtrValue == 0xababababababababULL)
+      return true;
+
+    ref<Expr> length = stringObject.second->read(8, Expr::Int64);
+    auto lengthCE = dyn_cast<ConstantExpr>(length);
+    if (!lengthCE)
+      return true;
+
+    uint64_t lengthValue = lengthCE->getZExtValue();
+    if (lengthValue > (1ULL << 20))
+      return true;
+
+    const uint64_t localData = stringObject.first->address + 16;
+    if (dataPtrValue != localData && stringObject.first->size >= 24) {
+      ref<Expr> capacity = stringObject.second->read(16, Expr::Int64);
+      auto capacityCE = dyn_cast<ConstantExpr>(capacity);
+      if (!capacityCE)
+        return true;
+      uint64_t capacityValue = capacityCE->getZExtValue();
+      if (capacityValue < lengthValue || capacityValue > (1ULL << 20))
+        return true;
+    }
+
+    return false;
+  };
+
   if (externalName == "__cxa_atexit" || externalName == "atexit" ||
       externalName == "__cxa_thread_atexit_impl" ||
       externalName == "__cxa_finalize") {
@@ -9752,6 +9806,34 @@ void Executor::callExternalFunction(ExecutionState &state, KInstruction *target,
     if (!resultType->isVoidTy())
       bindLocal(target, state,
                 ConstantExpr::create(0, getWidthForLLVMType(resultType)));
+    return;
+  }
+
+  const bool isStdBasicString =
+      externalName.contains("St7__cxx1112basic_string") &&
+      externalName.contains("IcSt11char_traitsIcESaIcEE");
+  if (isStdBasicString &&
+      (externalName.contains("D0Ev") || externalName.contains("D1Ev") ||
+       externalName.contains("D2Ev"))) {
+    ObjectPair stringObject;
+    bool success = false;
+    if (!arguments.empty() &&
+        state.addressSpace.resolveOne(state, solver.get(), arguments[0],
+                                      stringObject, success) &&
+        success && stringObject.first->size >= 8) {
+      ref<Expr> dataPtr = stringObject.second->read(0, Expr::Int64);
+      if (auto dataPtrCE = dyn_cast<ConstantExpr>(dataPtr)) {
+        if (dataPtrCE->getZExtValue() == 0xababababababababULL)
+          return;
+      }
+    }
+  }
+
+  const bool isRuntimeErrorFromString =
+      externalName.contains("St13runtime_errorC") &&
+      externalName.contains("ERKNSt7__cxx1112basic_string");
+  if (isRuntimeErrorFromString && arguments.size() >= 2 &&
+      hasUnsafeHostString(arguments[1])) {
     return;
   }
 
@@ -13906,13 +13988,11 @@ void Executor::checkDataRace(ExecutionState &state, KLoopInfo *loopInfo) {
   globalReplacements[threadZ] = newthreadZ;
   globalThreadCon = AndExpr::create(globalThreadCon, EqExpr::create(threadZ, newthreadZ));
   globalThreadCon = NotExpr::create(globalThreadCon);
-  globalBaseConstraints.push_back(globalThreadCon);
   allGlobalNewCon = globalThreadCon;
 
   sharedReplacements[threadZ] = newthreadZ;
   sharedblockCon = AndExpr::create(sharedblockCon, EqExpr::create(threadZ, newthreadZ));
   sharedblockCon = NotExpr::create(sharedblockCon);
-  sharedBaseConstraints.push_back(sharedblockCon);
   allSharedNewCon = sharedblockCon;
 
   bool isLoopIinitialThreadRelated = false;
@@ -13963,7 +14043,7 @@ void Executor::checkDataRace(ExecutionState &state, KLoopInfo *loopInfo) {
     }
     
     ref<Expr> originalAddress = pair.first;
-    bool mayBeTrue = false;
+    bool raceMayBeTrue = false;
     Solver::Validity res;
     bool success = true;
     std::string queryStr = "";
@@ -13993,12 +14073,13 @@ void Executor::checkDataRace(ExecutionState &state, KLoopInfo *loopInfo) {
             }
           }
         }
-        allGlobalNewCon = AndExpr::create(allGlobalNewCon, condition);
-        success = solver->evaluate(globalBaseConstraints, allGlobalNewCon, res,
-                                  state.queryMetaData, state.intArrNames, state.getIOExprs(), true);
-      if (success && (res == Solver::True || res == Solver::Unknown)) {
-        mayBeTrue = true;
-        Query query(globalBaseConstraints, NotExpr::create(condition), state.intArrNames, state.getIOExprs());
+        ref<Expr> raceCondition = AndExpr::create(globalThreadCon, condition);
+        success = solver->evaluate(globalBaseConstraints, raceCondition, res,
+                                   state.queryMetaData, state.intArrNames,
+                                   state.getIOExprs(), true);
+        raceMayBeTrue = success && (res == Solver::True || res == Solver::Unknown);
+      if (raceMayBeTrue) {
+        Query query(globalBaseConstraints, NotExpr::create(raceCondition), state.intArrNames, state.getIOExprs());
         queryStr = solver->getConstraintLog(query);
       }
     } else {
@@ -14027,18 +14108,18 @@ void Executor::checkDataRace(ExecutionState &state, KLoopInfo *loopInfo) {
             }
           }
         }
-        allSharedNewCon = AndExpr::create(allSharedNewCon, condition);
-        success = solver->evaluate(sharedBaseConstraints, allSharedNewCon, res,
-                                  state.queryMetaData, state.intArrNames, state.getIOExprs(), true);
-      if (success && (res == Solver::True || res == Solver::Unknown)) {
-        mayBeTrue = true;
-        Query query(sharedBaseConstraints, NotExpr::create(condition), state.intArrNames, state.getIOExprs());
+        ref<Expr> raceCondition = AndExpr::create(sharedblockCon, condition);
+        success = solver->evaluate(sharedBaseConstraints, raceCondition, res,
+                                   state.queryMetaData, state.intArrNames,
+                                   state.getIOExprs(), true);
+        raceMayBeTrue = success && (res == Solver::True || res == Solver::Unknown);
+      if (raceMayBeTrue) {
+        Query query(sharedBaseConstraints, NotExpr::create(raceCondition), state.intArrNames, state.getIOExprs());
         queryStr = solver->getConstraintLog(query);
       }
     }
     
-
-    if (success && mayBeTrue) {
+    if (raceMayBeTrue) {
       std::string lineId = std::get<2>(pair.second);
       state.dataRaces[lineId].push_back(originalAddress);
 

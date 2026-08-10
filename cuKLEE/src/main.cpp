@@ -57,6 +57,11 @@ cl::opt<bool>
                  cl::desc("symbolize loop index (default=true)."),
 		 cl::init(true));
 
+cl::opt<bool>
+  UseMerge("use-merge",
+                 cl::desc("Enable support for path merging via klee_open_merge and klee_close_merge (default=true)."),
+		 cl::init(true));
+
 cl::opt<unsigned>
   MaxEntry("max-entry",
             cl::desc("maximum number of entries"),
@@ -421,9 +426,12 @@ void runOptCommand(const std::string &inputFilePath, const std::string &outputFi
 
 void runKLEECommand(const std::string &functionName, const std::string &functionType, const std::string &jsonFile, const std::string &filePath, int i, const std::string &outputDir="") {
     // Run KLEE command with callerFunctionName as entry-point
-    std::string command = "klee --disable-verify --warnings-only-to-file --single-object-resolution=true --external-calls=over-approx --use-merge --max-depth=1024 --debug-print-instructions=all:file --entry-point=" + functionName + " --cuda-type=" + functionType + " --func-config=" + jsonFile  + " --jindex=" + llvm::utostr(i);
+    std::string command = "klee --disable-verify --warnings-only-to-file --single-object-resolution=true --external-calls=over-approx --max-depth=1024 --debug-print-instructions=all:file --entry-point=" + functionName + " --cuda-type=" + functionType + " --func-config=" + jsonFile  + " --jindex=" + llvm::utostr(i);
     if (!outputDir.empty()) {
         command += " --output-dir="+outputDir;
+    }
+    if (UseMerge) {
+        command += " --use-merge";
     }
     if (AllowReRun) {
         command += " --re-run=true";
@@ -434,36 +442,15 @@ void runKLEECommand(const std::string &functionName, const std::string &function
     command += " " + filePath;
     std::cout << "running " << command << "\n";
 
-    if (TimeOutSec == 0) {
-        int result = system(command.c_str());
-        if (result != 0) {
-            return;
-        }
-        return;
+    if (TimeOutSec != 0) {
+        command = "timeout -k 5s " + llvm::utostr(TimeOutSec) + "s " + command;
     }
 
-    // Run command asynchronously
-    auto future = std::async(std::launch::async, [&]() {
-        return std::system(command.c_str());
-    });
-
-    // Wait for completion or timeout
-    if (future.wait_for(std::chrono::seconds(TimeOutSec)) == std::future_status::timeout) {
-        std::cerr << "⚠️ cuKLEE timed out after " << TimeOutSec << " seconds for function " << functionName << std::endl;
-
-#ifdef _WIN32
-        // Windows: use taskkill
-        std::string killCmd = "taskkill /F /IM klee.exe >nul 2>&1";
-#else
-        // Linux/macOS: use pkill
-        std::string killCmd = "pkill -f klee";
-#endif
-        std::system(killCmd.c_str());
-        return; // just return, don’t throw or abort
-    }
-
-    int result = future.get(); // get exit code
+    int result = system(command.c_str());
     if (result != 0) {
+        if (TimeOutSec != 0 && result == 124 * 256) {
+            std::cerr << "⚠️ cuKLEE timed out after " << TimeOutSec << " seconds for function " << functionName << std::endl;
+        }
         std::cout << std::endl;
         return;
     }
@@ -472,9 +459,12 @@ void runKLEECommand(const std::string &functionName, const std::string &function
 
 void runKLEECommand(const std::string &functionName, const std::string &functionType, const std::string &filePath, const std::string &outputDir="") {
     // Run KLEE command with callerFunctionName as entry-point
-    std::string command = "klee --disable-verify --warnings-only-to-file --single-object-resolution=true --external-calls=over-approx --use-merge --max-depth=1024 --debug-print-instructions=all:file --entry-point=" + functionName + " --cuda-type=" + functionType;
+    std::string command = "klee --disable-verify --warnings-only-to-file --single-object-resolution=true --external-calls=over-approx --max-depth=1024 --debug-print-instructions=all:file --entry-point=" + functionName + " --cuda-type=" + functionType;
     if (!outputDir.empty()) {
         command += " --output-dir="+outputDir;
+    }
+    if (UseMerge) {
+        command += " --use-merge";
     }
     if (AllowReRun) {
         command += " --re-run=true";
@@ -485,36 +475,15 @@ void runKLEECommand(const std::string &functionName, const std::string &function
     command += " " + filePath;
     std::cout << "running " << command << "\n";
 
-    if (TimeOutSec == 0) {
-        int result = system(command.c_str());
-        if (result != 0) {
-            return;
-        }
-        return;
+    if (TimeOutSec != 0) {
+        command = "timeout -k 5s " + llvm::utostr(TimeOutSec) + "s " + command;
     }
 
-    // Run command asynchronously
-    auto future = std::async(std::launch::async, [&]() {
-        return std::system(command.c_str());
-    });
-
-    // Wait for completion or timeout
-    if (future.wait_for(std::chrono::seconds(TimeOutSec)) == std::future_status::timeout) {
-        std::cerr << "⚠️ cuKLEE timed out after " << TimeOutSec << " seconds for function " << functionName << std::endl;
-
-#ifdef _WIN32
-        // Windows: use taskkill
-        std::string killCmd = "taskkill /F /IM klee.exe >nul 2>&1";
-#else
-        // Linux/macOS: use pkill
-        std::string killCmd = "pkill -f klee";
-#endif
-        std::system(killCmd.c_str());
-        return; // just return, don’t throw or abort
-    }
-
-    int result = future.get(); // get exit code
+    int result = system(command.c_str());
     if (result != 0) {
+        if (TimeOutSec != 0 && result == 124 * 256) {
+            std::cerr << "⚠️ cuKLEE timed out after " << TimeOutSec << " seconds for function " << functionName << std::endl;
+        }
         std::cout << std::endl;
         return;
     }

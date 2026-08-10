@@ -360,7 +360,10 @@ void MergingSearcher::pauseState(ExecutionState &state) {
 
 void MergingSearcher::continueState(ExecutionState &state) {
   auto it = std::find(pausedStates.begin(), pausedStates.end(), &state);
-  assert(it != pausedStates.end());
+  if (it == pausedStates.end()) {
+    inCloseMerge.erase(&state);
+    return;
+  }
   pausedStates.erase(it);
   baseSearcher->update(nullptr, {&state}, {});
 }
@@ -397,10 +400,29 @@ ExecutionState& MergingSearcher::selectState() {
 void MergingSearcher::update(ExecutionState *current,
                              const std::vector<ExecutionState *> &addedStates,
                              const std::vector<ExecutionState *> &removedStates) {
+  std::vector<ExecutionState *> baseRemovedStates;
+  bool currentIsPaused = false;
+  if (current) {
+    currentIsPaused = std::find(pausedStates.begin(), pausedStates.end(),
+                                current) != pausedStates.end();
+  }
+
+  for (auto state : removedStates) {
+    auto it = std::find(pausedStates.begin(), pausedStates.end(), state);
+    if (it != pausedStates.end()) {
+      pausedStates.erase(it);
+      inCloseMerge.erase(state);
+    } else {
+      baseRemovedStates.push_back(state);
+    }
+  }
+
   // We have to check if the current execution state was just deleted, as to
   // not confuse the nurs searchers
-  if (std::find(pausedStates.begin(), pausedStates.end(), current) == pausedStates.end()) {
-    baseSearcher->update(current, addedStates, removedStates);
+  if (!currentIsPaused) {
+    baseSearcher->update(current, addedStates, baseRemovedStates);
+  } else if (!addedStates.empty() || !baseRemovedStates.empty()) {
+    baseSearcher->update(nullptr, addedStates, baseRemovedStates);
   }
 }
 

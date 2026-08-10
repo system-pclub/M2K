@@ -81,8 +81,12 @@ def main(directory, logDir, outputdir, isJson=True, max_processes=5, json_files=
         else:
             json_files = [os.path.join(directory, filename) for filename in os.listdir(directory) if filename.endswith('_combined.bc')]
     
+    run_func = run_klee_on_json_file if isJson else run_klee_on_bc_file
     with ProcessPoolExecutor(max_processes) as executor:
-        future_to_file = {executor.submit(run_klee_on_json_file, json_file, logDir, outputdir, useDirName): json_file for json_file in json_files} # if json_file not in filter_files
+        if isJson:
+            future_to_file = {executor.submit(run_func, json_file, logDir, outputdir, useDirName): json_file for json_file in json_files}
+        else:
+            future_to_file = {executor.submit(run_func, json_file, logDir, outputdir): json_file for json_file in json_files}
         
         for future in as_completed(future_to_file):
             json_file = future_to_file[future]

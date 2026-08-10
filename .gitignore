@@ -15,6 +15,7 @@ HFProbe/validation/*_results.json
 example/out
 **/*_modified.bc
 .vscode
+.VSCodeCounter
 evaluation/section-6-1-bug-detection/new_*
 evaluation/section-6-1-bug-detection/small_dataset_results
 evaluation/section-6-2-coverage/cuKLEE/log-*

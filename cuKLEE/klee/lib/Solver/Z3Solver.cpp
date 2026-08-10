@@ -29,7 +29,9 @@
 
 #include <memory>
 #include <cstdio>
+#include <climits>
 #include <fstream>
+#include <unistd.h>
 
 namespace {
 // the z3 binary to replay all Z3 API calls using its `-log` option.
@@ -311,7 +313,7 @@ int Z3SolverImpl::checkSatWithZ3CLI(const std::string &smtQuery, unsigned timeou
     std::string parentPath = (lastSlash == std::string::npos) ? "." : Z3QueryDumpFile.substr(0, lastSlash);
 
     // Temporary file path
-    std::string tmpFileName = parentPath + "/z3_tmp_query.smt2";
+    std::string tmpFileName = parentPath + "/z3_tmp_query_" + std::to_string(::getpid()) + ".smt2";
 
     // 2. Write SMT query to file
     std::ofstream ofs(tmpFileName);
@@ -322,7 +324,12 @@ int Z3SolverImpl::checkSatWithZ3CLI(const std::string &smtQuery, unsigned timeou
     ofs.close();
 
     // 3. Construct command line
-    std::string cmd = "z3 -smt2 -t:" + std::to_string(timeout) + " " + std::string(tmpFileName) /*+ " 2>/dev/null"*/;
+    unsigned timeoutSeconds = timeout == UINT_MAX ? 0 : (timeout + 999) / 1000;
+    std::string cmd;
+    if (timeoutSeconds) {
+      cmd = "timeout " + std::to_string(timeoutSeconds) + "s ";
+    }
+    cmd += "z3 -smt2 -t:" + std::to_string(timeout) + " " + std::string(tmpFileName) /*+ " 2>/dev/null"*/;
 
     // 4. Run command and capture output
     FILE *pipe = popen(cmd.c_str(), "r");
