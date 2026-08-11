@@ -563,8 +563,4 @@ def main():
     rs_benchmark_validate(args.cuklee_out_dir, args.profile_out_dir)
 
 if __name__ == "__main__":
-    # main()
-    start_time = time.time()
-    rs_benchmark_validate("/data/mvh6224-home/M2K-Artifact/cuKLEE/results/papers/out", "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper")
-    end_time = time.time()
-    print(f"Validation completed in {end_time - start_time:.2f} seconds.")
+    main()
