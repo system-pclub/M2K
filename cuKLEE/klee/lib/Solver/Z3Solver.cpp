@@ -176,59 +176,45 @@ void Z3Solver::setCoreSolverTimeout(time::Span timeout) {
 }
 
 std::string Z3SolverImpl::getConstraintLog(const Query &query) {
-  std::vector<Z3ASTHandle> assumptions;
-  // We use a different builder here because we don't want to interfere
-  // with the solver's builder because it may change the solver builder's
-  // cache.
-  // NOTE: The builder does not set `z3LogInteractionFile` to avoid conflicting
-  // with whatever the solver's builder is set to do.
-  Z3Builder temp_builder(/*autoClearConstructCache=*/false,
-                         /*z3LogInteractionFile=*/NULL);
-  ConstantArrayFinder constant_arrays_in_query;
-  for (auto const &constraint : query.constraints) {
-    assumptions.push_back(temp_builder.constructForInt(constraint, query.intArrNames, query.noCheckExprs));
-    constant_arrays_in_query.visit(constraint);
-  }
+  auto buildConstraintLog = [&](bool useBV, bool *usedInt2BV,
+                                bool *usedReal) {
+    std::vector<Z3ASTHandle> assumptions;
+    // We use a different builder here because we don't want to interfere
+    // with the solver's builder because it may change the solver builder's
+    // cache.
+    // NOTE: The builder does not set `z3LogInteractionFile` to avoid
+    // conflicting with whatever the solver's builder is set to do.
+    Z3Builder temp_builder(/*autoClearConstructCache=*/false,
+                           /*z3LogInteractionFile=*/NULL);
+    ConstantArrayFinder constant_arrays_in_query;
 
-  for (auto const &constant_array : constant_arrays_in_query.results) {
-    assert(temp_builder.constant_array_assertions.count(constant_array) <= 1 &&
-           "Constant array found in query, but not handled by Z3Builder");
-    for (auto const &arrayIndexValueExpr :
-         temp_builder.constant_array_assertions[constant_array]) {
-      assumptions.push_back(arrayIndexValueExpr);
-    }
-  }
-
-  for (auto const &int_array_pair : temp_builder.int_array_bounds) {
-    for (auto const &arrayIndexValueExpr : int_array_pair.second) {
-      assumptions.push_back(arrayIndexValueExpr);
-    }
-  }
-
-  // KLEE Queries are validity queries i.e.
-  // but Z3 works in terms of satisfiability so instead we ask the
-  // the negation of the equivalent i.e.
-  Z3ASTHandle formula;
-  if (query.expr) {
-    formula = Z3ASTHandle(
-      Z3_mk_not(temp_builder.ctx, temp_builder.constructForInt(query.expr, query.intArrNames, query.noCheckExprs, true)),
-      temp_builder.ctx);
-    constant_arrays_in_query.visit(query.expr);
-  }
-
-  if (temp_builder.useInt2BV && !temp_builder.useReal) {
-    assumptions.clear();
-    ConstantArrayFinder constant_arrays_in_query_new;
     for (auto const &constraint : query.constraints) {
-      assumptions.push_back(temp_builder.constructForBV(constraint, query.noCheckExprs));
-      constant_arrays_in_query_new.visit(constraint);
+      assumptions.push_back(
+          useBV ? temp_builder.constructForBV(constraint, query.noCheckExprs)
+                : temp_builder.constructForInt(constraint, query.intArrNames,
+                                               query.noCheckExprs));
+      constant_arrays_in_query.visit(constraint);
     }
 
-    for (auto const &constant_array : constant_arrays_in_query_new.results) {
-      assert(temp_builder.constant_array_assertions.count(constant_array) == 1 &&
-            "Constant array found in query, but not handled by Z3Builder");
+    // KLEE queries are validity queries, but Z3 works in terms of
+    // satisfiability, so ask for satisfiability of the negated query.
+    Z3ASTHandle formula;
+    if (query.expr) {
+      Z3ASTHandle queryExpr =
+          useBV ? temp_builder.constructForBV(query.expr, query.noCheckExprs,
+                                              true)
+                : temp_builder.constructForInt(query.expr, query.intArrNames,
+                                               query.noCheckExprs, true);
+      formula = Z3ASTHandle(Z3_mk_not(temp_builder.ctx, queryExpr),
+                            temp_builder.ctx);
+      constant_arrays_in_query.visit(query.expr);
+    }
+
+    for (auto const &constant_array : constant_arrays_in_query.results) {
+      assert(temp_builder.constant_array_assertions.count(constant_array) <= 1 &&
+             "Constant array found in query, but not handled by Z3Builder");
       for (auto const &arrayIndexValueExpr :
-          temp_builder.constant_array_assertions[constant_array]) {
+           temp_builder.constant_array_assertions[constant_array]) {
         assumptions.push_back(arrayIndexValueExpr);
       }
     }
@@ -239,38 +225,44 @@ std::string Z3SolverImpl::getConstraintLog(const Query &query) {
       }
     }
 
-    // KLEE Queries are validity queries i.e.
-    // but Z3 works in terms of satisfiability so instead we ask the
-    // the negation of the equivalent i.e.
-    Z3ASTHandle formula;
-    if (query.expr) {
-      formula = Z3ASTHandle(
-        Z3_mk_not(temp_builder.ctx, temp_builder.constructForBV(query.expr, query.noCheckExprs, true)),
-        temp_builder.ctx);
-        constant_arrays_in_query_new.visit(query.expr);
-    }
-  }
+    if (usedInt2BV)
+      *usedInt2BV = temp_builder.useInt2BV;
+    if (usedReal)
+      *usedReal = temp_builder.useReal;
 
-  std::vector<::Z3_ast> raw_assumptions{assumptions.cbegin(),
-                                        assumptions.cend()};
-  ::Z3_string result = Z3_benchmark_to_smtlib_string(
-      temp_builder.ctx,
-      /*name=*/"Emited by klee::Z3SolverImpl::getConstraintLog()",
-      /*logic=*/"",
-      /*status=*/"unknown",
-      /*attributes=*/"",
-      /*num_assumptions=*/raw_assumptions.size(),
-      /*assumptions=*/raw_assumptions.size() ? raw_assumptions.data() : nullptr,
-      /*formula=*/formula);
+    std::vector<::Z3_ast> raw_assumptions{assumptions.cbegin(),
+                                          assumptions.cend()};
+    ::Z3_string result = Z3_benchmark_to_smtlib_string(
+        temp_builder.ctx,
+        /*name=*/"Emited by klee::Z3SolverImpl::getConstraintLog()",
+        /*logic=*/"",
+        /*status=*/"unknown",
+        /*attributes=*/"",
+        /*num_assumptions=*/raw_assumptions.size(),
+        /*assumptions=*/
+        raw_assumptions.size() ? raw_assumptions.data() : nullptr,
+        /*formula=*/formula);
 
-  // We need to trigger a dereference before the `temp_builder` gets destroyed.
-  // We do this indirectly by emptying `assumptions` and assigning to
-  // `formula`.
-  raw_assumptions.clear();
-  assumptions.clear();
-  formula = Z3ASTHandle(NULL, temp_builder.ctx);
+    std::string resultString(result);
 
-  return {result};
+    // We need to trigger a dereference before the `temp_builder` gets destroyed.
+    // We do this indirectly by emptying `assumptions` and assigning to `formula`.
+    raw_assumptions.clear();
+    assumptions.clear();
+    formula = Z3ASTHandle(NULL, temp_builder.ctx);
+
+    return resultString;
+  };
+
+  bool usedInt2BV = false;
+  bool usedReal = false;
+  std::string result = buildConstraintLog(/*useBV=*/false, &usedInt2BV,
+                                          &usedReal);
+
+  if (usedInt2BV && !usedReal)
+    result = buildConstraintLog(/*useBV=*/true, nullptr, nullptr);
+
+  return result;
 }
 
 bool Z3SolverImpl::computeTruth(const Query &query, bool &isValid) {

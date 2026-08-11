@@ -2516,7 +2516,9 @@ void Executor::executeCall(ExecutionState &state, KInstruction *ki, Function *f,
       transferToBasicBlock(ii->getNormalDest(), i->getParent(), state);
     }
   } else {
-    if (f->getName().find("c106detail25fp8e4m3fn_from_fp32_valueEf") != std::string::npos) {
+    if (f->getName().find("cudaError9cudaErrorPKci") != std::string::npos && f->getReturnType()->isVoidTy()) {
+      return;
+    } else if (f->getName().find("c106detail25fp8e4m3fn_from_fp32_valueEf") != std::string::npos) {
       bindLocal(ki, state, arguments[0]);
       return;
     } else if (f->getName().find("vllm_is_batch_invariant")!=std::string::npos) {
@@ -4586,8 +4588,6 @@ void Executor::executeCall(ExecutionState &state, KInstruction *ki, Function *f,
         llvm::Type *returnType = f->getReturnType();
         bindLocal(ki, state, ZExtExpr::create(state.symbolicArrayMap[symName]->size, returnType->getIntegerBitWidth()));
         return;
-      } else {
-        klee_warning("vector.size(): vector object is not symbolic");
       }
     } else if (f->getName().find("6vectorIN2at6TensorESaIS1_EEixEm")!=std::string::npos) {
       bool success;
@@ -11464,6 +11464,57 @@ void Executor::callExternalFunction(ExecutionState &state, KInstruction *target,
     ObjectState *wos = state.addressSpace.getWriteable(op.first, op.second);
     wos->write(0, arguments[1]);
     wos->write(4, arguments[2]);
+    return;
+  }
+
+  if (callable->getName().find("cudaGetDeviceProperties_v2") != std::string::npos &&
+      callable->getFunctionType()->getReturnType()->isIntegerTy(32)) {
+    bool success;
+    ObjectPair op;
+    if (arguments.empty() || !state.addressSpace.resolveOne(state, solver.get(), arguments[0], op, success) || !success) {
+      terminateStateOnProgramError(state, "cudaGetDeviceProperties_v2: do not find target object", StateTerminationType::ReportError);
+      return;
+    }
+
+    ObjectState *wos = state.addressSpace.getWriteable(op.first, op.second);
+
+    for (int i = 0; i < 256; i++) {
+      wos->write(i, ConstantExpr::create(0, Expr::Int8));
+    }
+
+    wos->write(288, ConstantExpr::create(static_cast<int64_t>(8) * 1024 * 1024 * 1024, Expr::Int64)); // totalGlobalMem: 8GB
+    wos->write(296, ConstantExpr::create(48 * 1024, Expr::Int64)); // sharedMemPerBlock: 48KB
+    wos->write(304, ConstantExpr::create(65536, Expr::Int32)); // 65536 registers per block
+    wos->write(308, ConstantExpr::create(32, Expr::Int32)); // warpSize: 32
+    wos->write(312, ConstantExpr::create(1048576, Expr::Int64)); // memPitch: 1MB
+    wos->write(320, ConstantExpr::create(1024, Expr::Int32)); // maxThreadsPerBlock
+    wos->write(324, ConstantExpr::create(1024, Expr::Int32)); // maxThreadsDim X
+    wos->write(328, ConstantExpr::create(1024, Expr::Int32)); // maxThreadsDim Y
+    wos->write(332, ConstantExpr::create(64, Expr::Int32));   // maxThreadsDim Z
+    wos->write(336, ConstantExpr::create(2147483647, Expr::Int32)); // maxGridSize X
+    wos->write(340, ConstantExpr::create(65535, Expr::Int32));      // maxGridSize Y
+    wos->write(344, ConstantExpr::create(65535, Expr::Int32));      // maxGridSize Z
+    wos->write(348, ConstantExpr::create(1500000, Expr::Int32)); // clockRate: 1.5 GHz
+    wos->write(352, ConstantExpr::create(64 * 1024, Expr::Int64)); // totalConstMem: 64 KB
+    wos->write(360, ConstantExpr::create(9, Expr::Int32)); // Compute Capability major 9.x
+    wos->write(364, ConstantExpr::create(0, Expr::Int32)); // Compute Capability minor 9.0
+    wos->write(388, ConstantExpr::create(90, Expr::Int32));       // multiProcessorCount
+    wos->write(624, ConstantExpr::create(2048, Expr::Int32));     // maxThreadsPerMultiProcessor
+    wos->write(640, ConstantExpr::create(65536, Expr::Int64));    // sharedMemPerMultiprocessor
+    wos->write(648, ConstantExpr::create(65536, Expr::Int32));    // regsPerMultiprocessor
+    wos->write(712, ConstantExpr::create(32, Expr::Int32));       // maxBlocksPerMultiProcessor
+
+    for (int i = 0; i < 16; i++) {
+      wos->write(256 + i, ConstantExpr::create(0, Expr::Int8));
+    }
+
+    for (int i = 0; i < 8; i++) {
+      wos->write(272 + i, ConstantExpr::create(0, Expr::Int8));
+    }
+
+    wos->write(280, ConstantExpr::create(0, Expr::Int32));
+
+    bindLocal(target, state, ConstantExpr::create(0, Expr::Int32));
     return;
   }
 

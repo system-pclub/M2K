@@ -111,6 +111,139 @@ def add_smt2_constraints(solver, content):
     )
     return False
 
+def _strip_solver_commands(content):
+    content = content.replace("(check-sat)", "")
+    content = content.replace("(get-model)", "")
+    content = content.replace("(reset)", "")
+    return content
+
+def _find_smt_symbol(content, base_name, sort_pattern):
+    pattern = re.compile(
+        r"\(declare-fun\s+(" + re.escape(base_name) + r"(?:_\d+)?)\s+\(\)\s+"
+        + sort_pattern + r"\)"
+    )
+    match = pattern.search(content)
+    return match.group(1) if match else None
+
+def _bv_array_value(name, byte_width=8):
+    array = z3.Array(name, z3.BitVecSort(32), z3.BitVecSort(8))
+    value = z3.Select(array, z3.BitVecVal(byte_width - 1, 32))
+    for index in range(byte_width - 2, -1, -1):
+        value = z3.Concat(value, z3.Select(array, z3.BitVecVal(index, 32)))
+    return value
+
+def _has_int_declaration(content):
+    return re.search(r"\(declare-fun\s+\S+\s+\(\)\s+Int\)", content) is not None
+
+def _declared_symbolic_int(content, base_name):
+    int_name = _find_smt_symbol(content, base_name, r"Int")
+    if int_name:
+        expr = z3.Int(int_name)
+        return expr, expr, False
+
+    array_name = _find_smt_symbol(
+        content, base_name, r"\(Array\s+\(_\s+BitVec\s+32\)\s+\(_\s+BitVec\s+8\)\)"
+    )
+    if array_name:
+        bv_expr = _bv_array_value(array_name)
+        return bv_expr, bv_expr, True
+
+    return None, None, None
+
+def _fresh_symbolic_int(base_name, use_bitvec_array):
+    if use_bitvec_array:
+        bv_expr = _bv_array_value(base_name)
+        return bv_expr, bv_expr, True
+
+    expr = z3.Int(base_name)
+    return expr, expr, False
+
+def _find_symbolic_inputs(content):
+    batch_size, batch_size_model_expr, batch_size_is_bv = _declared_symbolic_int(
+        content, "batch_size"
+    )
+    seq_len, seq_len_model_expr, seq_len_is_bv = _declared_symbolic_int(
+        content, "seq_len"
+    )
+
+    if batch_size is not None and seq_len is not None:
+        return (
+            batch_size,
+            batch_size_model_expr,
+            batch_size_is_bv,
+            seq_len,
+            seq_len_model_expr,
+            seq_len_is_bv,
+        )
+
+    use_bitvec_array = not _has_int_declaration(content)
+    if batch_size is None:
+        batch_size, batch_size_model_expr, batch_size_is_bv = _fresh_symbolic_int(
+            "batch_size", use_bitvec_array
+        )
+    if seq_len is None:
+        seq_len, seq_len_model_expr, seq_len_is_bv = _fresh_symbolic_int(
+            "seq_len", use_bitvec_array
+        )
+
+    return (
+        batch_size,
+        batch_size_model_expr,
+        batch_size_is_bv,
+        seq_len,
+        seq_len_model_expr,
+        seq_len_is_bv,
+    )
+
+def _model_expr_as_int(model, expr):
+    value = model.evaluate(expr, model_completion=True)
+    if z3.is_bv_value(value):
+        return value.as_long()
+    if z3.is_int_value(value):
+        return value.as_long()
+    simplified = z3.simplify(value)
+    if z3.is_bv_value(simplified) or z3.is_int_value(simplified):
+        return simplified.as_long()
+    return None
+
+def _add_lower_bound(solver, expr, limit, is_bv):
+    if is_bv:
+        solver.add(z3.UGE(expr, z3.BitVecVal(limit, expr.size())))
+    else:
+        solver.add(expr >= limit)
+
+def _add_upper_bound(solver, expr, limit, is_bv):
+    if is_bv:
+        width = expr.size()
+        if limit < (1 << width) - 1:
+            solver.add(z3.ULE(expr, z3.BitVecVal(limit, width)))
+    else:
+        solver.add(expr <= limit)
+
+def _add_equal_value(solver, expr, value, is_bv):
+    if is_bv:
+        solver.add(expr == z3.BitVecVal(value, expr.size()))
+    else:
+        solver.add(expr == value)
+
+def _add_positive_input_bounds(
+    solver, batch_size, batch_size_is_bv, seq_len, seq_len_is_bv
+):
+    _add_lower_bound(solver, batch_size, 1, batch_size_is_bv)
+    _add_lower_bound(solver, seq_len, 1, seq_len_is_bv)
+
+def _add_token_bound(
+    solver, batch_size, batch_size_is_bv, seq_len, seq_len_is_bv, num_tokens
+):
+    if batch_size_is_bv and seq_len_is_bv:
+        width = max(batch_size.size(), seq_len.size())
+        product_width = width * 2
+        batch_ext = z3.ZeroExt(product_width - batch_size.size(), batch_size)
+        seq_ext = z3.ZeroExt(product_width - seq_len.size(), seq_len)
+        solver.add(z3.ULE(batch_ext * seq_ext, z3.BitVecVal(num_tokens, product_width)))
+    else:
+        solver.add(batch_size * seq_len <= num_tokens)
+
 def solve_with_bounds(smt_file, N1, N2):
     global processed
     
@@ -122,30 +255,38 @@ def solve_with_bounds(smt_file, N1, N2):
         
     with open(smt_file, "r") as f:
         content = f.read()
-    content = content.replace("(check-sat)", "")  
-    content = content.replace("(get-model)", "")
-    content = content.replace("(reset)", "")
+    content = _strip_solver_commands(content)
     
     s = z3.Solver()
     s.set(timeout=30000)
     if not add_smt2_constraints(s, content):
         return -1, -1
 
-    # Declare variables
-    batch_size = z3.Int('batch_size')
-    seq_len = z3.Int('seq_len')
+    (
+        batch_size,
+        batch_size_model_expr,
+        batch_size_is_bv,
+        seq_len,
+        seq_len_model_expr,
+        seq_len_is_bv,
+    ) = (
+        _find_symbolic_inputs(content)
+    )
 
     # Add new constraints
-    s.add(batch_size <= N1)
-    s.add(seq_len <= N2)
+    _add_positive_input_bounds(
+        s, batch_size, batch_size_is_bv, seq_len, seq_len_is_bv
+    )
+    _add_upper_bound(s, batch_size, N1, batch_size_is_bv)
+    _add_upper_bound(s, seq_len, N2, seq_len_is_bv)
     result = s.check()
 
     if result == z3.sat:
         model = s.model()
-        bs_val = model.evaluate(batch_size, model_completion=True)
-        sl_val = model.evaluate(seq_len, model_completion=True)
-        processed[smt_file][(N1, N2)] = (bs_val.as_long(), sl_val.as_long())
-        return bs_val.as_long(), sl_val.as_long()
+        bs_val = _model_expr_as_int(model, batch_size_model_expr)
+        sl_val = _model_expr_as_int(model, seq_len_model_expr)
+        processed[smt_file][(N1, N2)] = (bs_val, sl_val)
+        return bs_val, sl_val
     elif result == z3.unknown:
         processed[smt_file][(N1, N2)] = (None, None)
         print(f"Solver returned UNKNOWN. {s.reason_unknown()}")
@@ -154,34 +295,59 @@ def solve_with_bounds(smt_file, N1, N2):
         processed[smt_file][(N1, N2)] = (None, None)
         return None, None
 
-def solve_with_bounds(smt_file, num_tokens, max_model_len=None):        
+def solve_with_bounds(smt_file, num_tokens, max_model_len=None, preferred_pair=None):
     with open(smt_file, "r") as f:
         content = f.read()
-    content = content.replace("(check-sat)", "")  
-    content = content.replace("(get-model)", "")
-    content = content.replace("(reset)", "")
+    content = _strip_solver_commands(content)
     
     s = z3.Solver()
     s.set(timeout=30000)
     if not add_smt2_constraints(s, content):
         return -1, -1
 
-    # Declare variables
-    batch_size = z3.Int('batch_size')
-    seq_len = z3.Int('seq_len')
+    (
+        batch_size,
+        batch_size_model_expr,
+        batch_size_is_bv,
+        seq_len,
+        seq_len_model_expr,
+        seq_len_is_bv,
+    ) = (
+        _find_symbolic_inputs(content)
+    )
 
     # Add new constraints
+    _add_positive_input_bounds(
+        s, batch_size, batch_size_is_bv, seq_len, seq_len_is_bv
+    )
     if num_tokens:
-        s.add(batch_size * seq_len <= num_tokens)
+        _add_token_bound(
+            s, batch_size, batch_size_is_bv, seq_len, seq_len_is_bv, num_tokens
+        )
     if max_model_len:
-        s.add(seq_len <= max_model_len)
+        _add_upper_bound(s, seq_len, max_model_len, seq_len_is_bv)
+
+    if preferred_pair is not None:
+        preferred_batch_size, preferred_seq_len = preferred_pair
+        s.push()
+        _add_equal_value(
+            s, batch_size, int(preferred_batch_size), batch_size_is_bv
+        )
+        _add_equal_value(s, seq_len, int(preferred_seq_len), seq_len_is_bv)
+        result = s.check()
+        s.pop()
+        if result == z3.sat:
+            return int(preferred_batch_size), int(preferred_seq_len)
+        if result == z3.unknown:
+            print(f"Solver returned UNKNOWN for preferred pair. {s.reason_unknown()}")
+
     result = s.check()
 
     if result == z3.sat:
         model = s.model()
-        bs_val = model.evaluate(batch_size, model_completion=True)
-        sl_val = model.evaluate(seq_len, model_completion=True)
-        return bs_val.as_long(), sl_val.as_long()
+        bs_val = _model_expr_as_int(model, batch_size_model_expr)
+        sl_val = _model_expr_as_int(model, seq_len_model_expr)
+        return bs_val, sl_val
     elif result == z3.unknown:
         return None, None
     else:

@@ -339,7 +339,7 @@ def vllm_benchmark_validate(klee_out_dir, profile_dir):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="generate input files for cuKLEE."
+        description="Validate vLLM results"
     )
 
     parser.add_argument(
