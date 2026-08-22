@@ -1,0 +1,25 @@
+[
+    {
+        "py_function": "silu_and_mul",
+        "cuda_function": "silu_and_mul",
+        "input_file_path": "evaluation/section-6-2-coverage/benchmarks/original/1959/activation_kernels_combined.bc",
+        "args": [
+            {
+                "shape": [
+                    "1.0*s*b",
+                    11008
+                ],
+                "dtype": "torch.float16",
+                "type": "torch.Tensor"
+            },
+            {
+                "shape": [
+                    "1.0*s*b",
+                    22016
+                ],
+                "dtype": "torch.float16",
+                "type": "torch.Tensor"
+            }
+        ]
+    }
+]

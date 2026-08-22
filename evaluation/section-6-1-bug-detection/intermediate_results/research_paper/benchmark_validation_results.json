@@ -1,0 +1,1137 @@
+{
+    "code1x8_matmat": {
+        "py_func": "code1x8_matmat",
+        "0": {
+            "AQLM": null
+        },
+        "1": {
+            "AQLM": null
+        },
+        "3": {
+            "AQLM": null
+        }
+    },
+    "code1x8_matmat_dequant": {
+        "py_func": "code1x8_matmat_dequant",
+        "0": {
+            "AQLM": null
+        },
+        "1": {
+            "AQLM": null
+        },
+        "3": {
+            "AQLM": null
+        }
+    },
+    "dequantize": {
+        "py_func": "dequantize",
+        "0": {
+            "Mixture-Compressor-MoE": {}
+        },
+        "1": {
+            "Mixture-Compressor-MoE": {}
+        },
+        "2": {
+            "Mixture-Compressor-MoE": {}
+        }
+    },
+    "lutgemm_compute_block_shiftInt8": {
+        "py_func": "lutgemm_compute_block_shiftInt8",
+        "0": {
+            "ShiftAddLLM": {
+                "337_473_344-asm-71603_70571_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 876,
+                        "seq_len": 500
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_473_344-asm-71603_70587_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 673,
+                        "seq_len": 396
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_473_344-asm-71603_70623_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 528,
+                        "seq_len": 35
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_474_344-asm-71603_70685_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 145,
+                        "seq_len": 1080
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_474_344-asm-71603_70701_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 586,
+                        "seq_len": 1823
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_474_344-asm-71603_70737_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 994,
+                        "seq_len": 2046
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_475_344-asm-71603_70799_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 90,
+                        "seq_len": 108
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_475_344-asm-71603_70815_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 670,
+                        "seq_len": 1791
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_475_344-asm-71603_70851_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 716,
+                        "seq_len": 383
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_476_344-asm-71603_70913_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 585,
+                        "seq_len": 221
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_476_344-asm-71603_70929_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 910,
+                        "seq_len": 1629
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_476_344-asm-71603_70965_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 543,
+                        "seq_len": 1337
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_479_344-asm-71603_71043_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 732,
+                        "seq_len": 1164
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_479_344-asm-71603_71069_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 836,
+                        "seq_len": 1899
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_479_344-asm-71603_71105_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 747,
+                        "seq_len": 614
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_480_344-asm-71603_71166_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 912,
+                        "seq_len": 2011
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_480_344-asm-71603_71182_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 896,
+                        "seq_len": 1892
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_480_344-asm-71603_71218_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 930,
+                        "seq_len": 1763
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_481_344-asm-71603_71279_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 921,
+                        "seq_len": 170
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_481_344-asm-71603_71295_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 737,
+                        "seq_len": 1247
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_481_344-asm-71603_71331_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 849,
+                        "seq_len": 376
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_482_344-asm-71603_71392_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 163,
+                        "seq_len": 398
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_482_344-asm-71603_71408_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 616,
+                        "seq_len": 221
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_482_344-asm-71603_71444_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 986,
+                        "seq_len": 955
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                }
+            }
+        },
+        "1": {
+            "ShiftAddLLM": {
+                "337_473_344-asm-71603_70571_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 606,
+                        "seq_len": 1073
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_473_344-asm-71603_70587_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 220,
+                        "seq_len": 1494
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_473_344-asm-71603_70623_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 900,
+                        "seq_len": 877
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_474_344-asm-71603_70685_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 914,
+                        "seq_len": 1857
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_474_344-asm-71603_70701_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 736,
+                        "seq_len": 377
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_474_344-asm-71603_70737_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 239,
+                        "seq_len": 1389
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_475_344-asm-71603_70799_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 785,
+                        "seq_len": 1085
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_475_344-asm-71603_70815_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 909,
+                        "seq_len": 1777
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_475_344-asm-71603_70851_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 798,
+                        "seq_len": 1559
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_476_344-asm-71603_70913_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 581,
+                        "seq_len": 1015
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_476_344-asm-71603_70929_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 665,
+                        "seq_len": 1683
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_476_344-asm-71603_70965_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 533,
+                        "seq_len": 596
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_479_344-asm-71603_71043_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 506,
+                        "seq_len": 392
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_479_344-asm-71603_71069_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 990,
+                        "seq_len": 2045
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_479_344-asm-71603_71105_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 77,
+                        "seq_len": 1057
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_480_344-asm-71603_71166_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 354,
+                        "seq_len": 92
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_480_344-asm-71603_71182_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 767,
+                        "seq_len": 1396
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_480_344-asm-71603_71218_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 295,
+                        "seq_len": 454
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_481_344-asm-71603_71279_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 542,
+                        "seq_len": 1297
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_481_344-asm-71603_71295_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 321,
+                        "seq_len": 816
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_481_344-asm-71603_71331_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 556,
+                        "seq_len": 1265
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_482_344-asm-71603_71392_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 715,
+                        "seq_len": 735
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_482_344-asm-71603_71408_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 262,
+                        "seq_len": 1740
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_482_344-asm-71603_71444_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 894,
+                        "seq_len": 1161
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                }
+            }
+        },
+        "2": {
+            "ShiftAddLLM": {
+                "337_473_344-asm-71603_70571_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 832,
+                        "seq_len": 786
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_473_344-asm-71603_70587_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 745,
+                        "seq_len": 10
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_473_344-asm-71603_70623_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 961,
+                        "seq_len": 1004
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_474_344-asm-71603_70685_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 473,
+                        "seq_len": 112
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_474_344-asm-71603_70701_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 837,
+                        "seq_len": 1802
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_474_344-asm-71603_70737_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 622,
+                        "seq_len": 989
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_475_344-asm-71603_70799_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 874,
+                        "seq_len": 1866
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_475_344-asm-71603_70815_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 9,
+                        "seq_len": 882
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_475_344-asm-71603_70851_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 970,
+                        "seq_len": 1890
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_476_344-asm-71603_70913_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 589,
+                        "seq_len": 759
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_476_344-asm-71603_70929_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 719,
+                        "seq_len": 2013
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_476_344-asm-71603_70965_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 458,
+                        "seq_len": 1705
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_479_344-asm-71603_71043_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 695,
+                        "seq_len": 1729
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_479_344-asm-71603_71069_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 725,
+                        "seq_len": 2046
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_479_344-asm-71603_71105_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 867,
+                        "seq_len": 1536
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_480_344-asm-71603_71166_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 725,
+                        "seq_len": 1533
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_480_344-asm-71603_71182_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 374,
+                        "seq_len": 2032
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_480_344-asm-71603_71218_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 365,
+                        "seq_len": 1636
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_481_344-asm-71603_71279_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 947,
+                        "seq_len": 1513
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_481_344-asm-71603_71295_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 64,
+                        "seq_len": 144
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_481_344-asm-71603_71331_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 906,
+                        "seq_len": 940
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_482_344-asm-71603_71392_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 520,
+                        "seq_len": 92
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_482_344-asm-71603_71408_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 672,
+                        "seq_len": 483
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_482_344-asm-71603_71444_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 13,
+                        "seq_len": 2048
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                }
+            }
+        },
+        "3": {
+            "ShiftAddLLM": {
+                "337_473_344-asm-71603_70571_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 563,
+                        "seq_len": 1223
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_473_344-asm-71603_70587_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 659,
+                        "seq_len": 675
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_473_344-asm-71603_70623_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 468,
+                        "seq_len": 1189
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_474_344-asm-71603_70685_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 641,
+                        "seq_len": 870
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_474_344-asm-71603_70701_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 71,
+                        "seq_len": 1793
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_474_344-asm-71603_70737_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 68,
+                        "seq_len": 1929
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_475_344-asm-71603_70799_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 980,
+                        "seq_len": 255
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_475_344-asm-71603_70815_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 947,
+                        "seq_len": 640
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_475_344-asm-71603_70851_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 876,
+                        "seq_len": 1877
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_476_344-asm-71603_70913_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 623,
+                        "seq_len": 937
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_476_344-asm-71603_70929_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 1000,
+                        "seq_len": 1610
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_476_344-asm-71603_70965_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 974,
+                        "seq_len": 1890
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_479_344-asm-71603_71043_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 700,
+                        "seq_len": 1714
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_479_344-asm-71603_71069_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 397,
+                        "seq_len": 17
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_479_344-asm-71603_71105_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 215,
+                        "seq_len": 538
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_480_344-asm-71603_71166_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 656,
+                        "seq_len": 824
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_480_344-asm-71603_71182_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 20,
+                        "seq_len": 1112
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_480_344-asm-71603_71218_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 855,
+                        "seq_len": 615
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_481_344-asm-71603_71279_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 240,
+                        "seq_len": 805
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_481_344-asm-71603_71295_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 801,
+                        "seq_len": 1610
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_481_344-asm-71603_71331_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 840,
+                        "seq_len": 1903
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_482_344-asm-71603_71392_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 377,
+                        "seq_len": 1699
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_482_344-asm-71603_71408_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 268,
+                        "seq_len": 1119
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                },
+                "337_482_344-asm-71603_71444_21411_io.txt": {
+                    "status": "success",
+                    "batch_size": 1,
+                    "seq_len": 1,
+                    "fallback_from": {
+                        "batch_size": 874,
+                        "seq_len": 606
+                    },
+                    "config": "/data/mvh6224-home/M2K-Artifact/evaluation/section-6-1-bug-detection/intermediate_results/research_paper/config/ShiftAddLLM/lutgemm_compute.json",
+                    "buggy_line": "337"
+                }
+            }
+        }
+    },
+    "matmul_kbit": {
+        "py_func": "matmul_kbit",
+        "0": {
+            "any-precision-llm": {}
+        },
+        "1": {
+            "any-precision-llm": {}
+        },
+        "2": {
+            "any-precision-llm": {}
+        }
+    },
+    "dequant_kbit": {
+        "py_func": "dequant_kbit",
+        "0": {
+            "any-precision-llm": {}
+        },
+        "1": {
+            "any-precision-llm": {}
+        },
+        "2": {
+            "any-precision-llm": {}
+        }
+    }
+}

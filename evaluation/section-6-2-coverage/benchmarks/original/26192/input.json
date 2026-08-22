@@ -1,0 +1,36 @@
+[
+    {
+        "py_function": "rms_norm",
+        "cuda_function": "rms_norm",
+        "input_file_path": "evaluation/section-6-1-bug-detection/benchmarks/vllm/compiled_files/layernorm_kernels_combined.bc",
+        "args": [
+            {
+                "shape": [
+                    "1.0*s*b",
+                    4096
+                ],
+                "dtype": "torch.float16",
+                "type": "torch.Tensor"
+            },
+            {
+                "shape": [
+                    "1.0*s*b",
+                    4096
+                ],
+                "dtype": "torch.float16",
+                "type": "torch.Tensor"
+            },
+            {
+                "shape": [
+                    4096
+                ],
+                "dtype": "torch.float16",
+                "type": "torch.Tensor"
+            },
+            {
+                "value": 1e-06,
+                "type": "float"
+            }
+        ]
+    }
+]
