@@ -1,0 +1,263 @@
+; start Z3 query
+; Emited by klee::Z3SolverImpl::getConstraintLog()
+(set-info :status unknown)
+(declare-fun |_arg_0.size[0]| () Int)
+(declare-fun |_arg_1.size[0]| () Int)
+(declare-fun batch_size () Int)
+(declare-fun seq_len () Int)
+(declare-fun blockIdx.x0 () Int)
+(declare-fun blockIdx.y0 () Int)
+(declare-fun blockIdx.z0 () Int)
+(declare-fun threadIdx.y0 () Int)
+(declare-fun threadIdx.z0 () Int)
+(declare-fun loop_index_10 () Int)
+(declare-fun _arg_1_0 () (Array Int Int))
+(declare-fun loop_index_10_out () Int)
+(declare-fun loop_index_9 () Int)
+(declare-fun _ZZN4vllm23segmented_max_reductionIN3c104HalfENS1_13Float8_e4m3fnEEEvPfPKT_lE5cache_1 () (Array Int Int))
+(declare-fun loop_index_9_out () Int)
+(declare-fun threadIdx.x0 () Int)
+(declare-fun blockIdx.x5 () Int)
+(declare-fun blockIdx.y5 () Int)
+(declare-fun blockIdx.z5 () Int)
+(declare-fun threadIdx.x5 () Int)
+(declare-fun threadIdx.y5 () Int)
+(declare-fun threadIdx.z5 () Int)
+(assert
+ (<= 0 |_arg_0.size[0]|))
+(assert
+ (<= |_arg_0.size[0]| 2147483647))
+(assert
+ (<= 1 |_arg_0.size[0]|))
+(assert
+ (let ((?x13 (* 896 |_arg_0.size[0]|)))
+ (<= ?x13 9223372036854775807)))
+(assert
+ (<= 0 |_arg_1.size[0]|))
+(assert
+ (<= |_arg_1.size[0]| 2147483647))
+(assert
+ (<= 1 |_arg_1.size[0]|))
+(assert
+ (let ((?x22 (* 896 |_arg_1.size[0]|)))
+ (<= ?x22 9223372036854775807)))
+(assert
+ (<= 0 batch_size))
+(assert
+ (<= batch_size 2147483647))
+(assert
+ (<= 1 batch_size))
+(assert
+ (<= batch_size 1000))
+(assert
+ (<= 0 seq_len))
+(assert
+ (<= seq_len 2147483647))
+(assert
+ (<= 1 seq_len))
+(assert
+ (<= seq_len 32768))
+(assert
+ (let ((?x37 (* batch_size seq_len)))
+ (<= ?x37 2864606)))
+(assert
+ (let ((?x37 (* batch_size seq_len)))
+ (= |_arg_0.size[0]| ?x37)))
+(assert
+ (let ((?x37 (* batch_size seq_len)))
+ (= |_arg_1.size[0]| ?x37)))
+(assert
+ (<= 0 blockIdx.x0))
+(assert
+ (let ((?x22 (* 896 |_arg_1.size[0]|)))
+ (let (($x46 (< ?x22 0)))
+ (let ((?x54 (div (ite $x46 (- ?x22) ?x22) (ite (< 896 0) (- 896) 896))))
+ (let ((?x56 (ite (and $x46 (not (< 896 0))) (- ?x54) ?x54)))
+ (< blockIdx.x0 ?x56))))))
+(assert
+ (<= 0 blockIdx.y0))
+(assert
+ (< blockIdx.y0 1))
+(assert
+ (<= 0 blockIdx.z0))
+(assert
+ (< blockIdx.z0 1))
+(assert
+ (<= 0 threadIdx.y0))
+(assert
+ (< threadIdx.y0 1))
+(assert
+ (<= 0 threadIdx.z0))
+(assert
+ (< threadIdx.z0 1))
+(assert
+ (<= (- 9223372036854775808) loop_index_10))
+(assert
+ (<= loop_index_10 9223372036854775807))
+(assert
+ (let ((?x74 (* 1024 blockIdx.x0)))
+ (<= ?x74 loop_index_10)))
+(assert
+ (let ((?x22 (* 896 |_arg_1.size[0]|)))
+ (< loop_index_10 ?x22)))
+(assert
+ (let ((?x22 (* 896 |_arg_1.size[0]|)))
+ (let (($x46 (< ?x22 0)))
+ (let ((?x54 (div (ite $x46 (- ?x22) ?x22) (ite (< 896 0) (- 896) 896))))
+ (let ((?x56 (ite (and $x46 (not (< 896 0))) (- ?x54) ?x54)))
+ (let ((?x78 (* 1024 ?x56)))
+ (let ((?x74 (* 1024 blockIdx.x0)))
+ (let ((?x77 (- loop_index_10 ?x74)))
+ (let ((?x79 (rem ?x77 ?x78)))
+ (= 0 ?x79))))))))))
+(assert
+ (let ((?x91 (select _arg_1_0 (div (- (+ 140340254744576 (* 2 loop_index_10)) 140340254744576) 2))))
+ (<= ?x91 32767)))
+(assert
+ (let ((?x91 (select _arg_1_0 (div (- (+ 140340254744576 (* 2 loop_index_10)) 140340254744576) 2))))
+ (<= (- 32768) ?x91)))
+(assert
+ (<= (- 9223372036854775808) loop_index_10_out))
+(assert
+ (<= loop_index_10_out 9223372036854775807))
+(assert
+ (let ((?x22 (* 896 |_arg_1.size[0]|)))
+ (let (($x100 (< loop_index_10_out ?x22)))
+ (= false $x100))))
+(assert
+ (<= (- 2147483648) loop_index_9))
+(assert
+ (<= loop_index_9 2147483647))
+(assert
+ (<= loop_index_9 512))
+(assert
+ (<= 0 loop_index_9))
+(assert
+ (let (($x109 (= 0 loop_index_9)))
+ (= false $x109)))
+(assert
+ (< 0 loop_index_9))
+(assert
+ (let ((?x122 (select _ZZN4vllm23segmented_max_reductionIN3c104HalfENS1_13Float8_e4m3fnEEEvPfPKT_lE5cache_1 (div (- (+ 382795776 (* 4 loop_index_9)) 382795776) 4))))
+ (<= 0 ?x122)))
+(assert
+ (let ((?x127 (select _ZZN4vllm23segmented_max_reductionIN3c104HalfENS1_13Float8_e4m3fnEEEvPfPKT_lE5cache_1 (div 0 4))))
+ (<= 0 ?x127)))
+(assert
+ (let ((?x122 (select _ZZN4vllm23segmented_max_reductionIN3c104HalfENS1_13Float8_e4m3fnEEEvPfPKT_lE5cache_1 (div (- (+ 382795776 (* 4 loop_index_9)) 382795776) 4))))
+ (let ((?x127 (select _ZZN4vllm23segmented_max_reductionIN3c104HalfENS1_13Float8_e4m3fnEEEvPfPKT_lE5cache_1 (div 0 4))))
+ (let (($x131 (< ?x127 ?x122)))
+ (= false $x131)))))
+(assert
+ (= 0 loop_index_9_out))
+(assert
+ (= 0 threadIdx.x0))
+(assert
+ (let ((?x127 (select _ZZN4vllm23segmented_max_reductionIN3c104HalfENS1_13Float8_e4m3fnEEEvPfPKT_lE5cache_1 (div 0 4))))
+ (<= 0 ?x127)))
+(assert
+ (<= 0 blockIdx.x5))
+(assert
+ (let ((?x22 (* 896 |_arg_1.size[0]|)))
+ (let (($x46 (< ?x22 0)))
+ (let ((?x54 (div (ite $x46 (- ?x22) ?x22) (ite (< 896 0) (- 896) 896))))
+ (let ((?x56 (ite (and $x46 (not (< 896 0))) (- ?x54) ?x54)))
+ (< blockIdx.x5 ?x56))))))
+(assert
+ (<= 0 blockIdx.y5))
+(assert
+ (< blockIdx.y5 1))
+(assert
+ (<= 0 blockIdx.z5))
+(assert
+ (< blockIdx.z5 1))
+(assert
+ (<= 0 threadIdx.x5))
+(assert
+ (< threadIdx.x5 1024))
+(assert
+ (<= 0 threadIdx.y5))
+(assert
+ (< threadIdx.y5 1))
+(assert
+ (<= 0 threadIdx.z5))
+(assert
+ (< threadIdx.z5 1))
+(assert
+ (let ((?x155 (* 1024 blockIdx.x5)))
+ (let ((?x156 (+ ?x155 threadIdx.x5)))
+ (let (($x158 (<= ?x156 2147483647)))
+ (= false $x158)))))
+(assert
+ (let ((?x122 (select _ZZN4vllm23segmented_max_reductionIN3c104HalfENS1_13Float8_e4m3fnEEEvPfPKT_lE5cache_1 (div (- (+ 382795776 (* 4 loop_index_9)) 382795776) 4))))
+ (>= ?x122 (- 2147483648))))
+(assert
+ (let ((?x122 (select _ZZN4vllm23segmented_max_reductionIN3c104HalfENS1_13Float8_e4m3fnEEEvPfPKT_lE5cache_1 (div (- (+ 382795776 (* 4 loop_index_9)) 382795776) 4))))
+ (<= ?x122 2147483647)))
+(assert
+ (let ((?x127 (select _ZZN4vllm23segmented_max_reductionIN3c104HalfENS1_13Float8_e4m3fnEEEvPfPKT_lE5cache_1 (div 0 4))))
+ (>= ?x127 (- 2147483648))))
+(assert
+ (let ((?x127 (select _ZZN4vllm23segmented_max_reductionIN3c104HalfENS1_13Float8_e4m3fnEEEvPfPKT_lE5cache_1 (div 0 4))))
+ (<= ?x127 2147483647)))
+(assert
+ (let ((?x127 (select _ZZN4vllm23segmented_max_reductionIN3c104HalfENS1_13Float8_e4m3fnEEEvPfPKT_lE5cache_1 (div 0 4))))
+ (>= ?x127 (- 2147483648))))
+(assert
+ (let ((?x127 (select _ZZN4vllm23segmented_max_reductionIN3c104HalfENS1_13Float8_e4m3fnEEEvPfPKT_lE5cache_1 (div 0 4))))
+ (<= ?x127 2147483647)))
+(assert
+ (let ((?x91 (select _arg_1_0 (div (- (+ 140340254744576 (* 2 loop_index_10)) 140340254744576) 2))))
+ (>= ?x91 (- 32768))))
+(assert
+ (let ((?x91 (select _arg_1_0 (div (- (+ 140340254744576 (* 2 loop_index_10)) 140340254744576) 2))))
+ (<= ?x91 32767)))
+(assert
+ (let ((?x83 (* 2 loop_index_10)))
+ (let ((?x86 (+ 140340254744576 ?x83)))
+ (<= ?x86 9223372036854775807))))
+(assert
+ (let ((?x114 (* 4 loop_index_9)))
+ (let ((?x117 (+ 382795776 ?x114)))
+ (<= ?x117 9223372036854775807))))
+(assert
+ (let ((?x155 (* 1024 blockIdx.x5)))
+ (let ((?x156 (+ ?x155 threadIdx.x5)))
+ (<= ?x156 9223372036854775807))))
+(assert
+ (let ((?x13 (* 896 |_arg_0.size[0]|)))
+ (>= ?x13 (- 9223372036854775808))))
+(assert
+ (let ((?x13 (* 896 |_arg_0.size[0]|)))
+ (<= ?x13 9223372036854775807)))
+(assert
+ (let ((?x22 (* 896 |_arg_1.size[0]|)))
+ (>= ?x22 (- 9223372036854775808))))
+(assert
+ (let ((?x22 (* 896 |_arg_1.size[0]|)))
+ (<= ?x22 9223372036854775807)))
+(assert
+ (let ((?x37 (* batch_size seq_len)))
+ (>= ?x37 (- 9223372036854775808))))
+(assert
+ (let ((?x37 (* batch_size seq_len)))
+ (<= ?x37 9223372036854775807)))
+(assert
+ (let ((?x83 (* 2 loop_index_10)))
+ (>= ?x83 (- 9223372036854775808))))
+(assert
+ (let ((?x83 (* 2 loop_index_10)))
+ (<= ?x83 9223372036854775807)))
+(assert
+ (let ((?x114 (* 4 loop_index_9)))
+ (>= ?x114 (- 9223372036854775808))))
+(assert
+ (let ((?x114 (* 4 loop_index_9)))
+ (<= ?x114 9223372036854775807)))
+(assert
+ (not false))
+(check-sat)
+(get-model)
+(reset)
+; end Z3 query
+

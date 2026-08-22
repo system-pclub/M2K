@@ -1,0 +1,17 @@
+cuKLEE: Using Z3 solver backend
+cuKLEE: Deterministic allocator: Using quarantine queue size 8
+cuKLEE: Deterministic allocator: shared (start-address=0x10000 size=0 GiB)
+cuKLEE: Deterministic allocator: globals (start-address=0x7fbe03084000 size=10 GiB)
+cuKLEE: Deterministic allocator: constants (start-address=0x7fbb83084000 size=10 GiB)
+cuKLEE: Deterministic allocator: heap (start-address=0x7ebb83084000 size=1024 GiB)
+cuKLEE: Deterministic allocator: stack (start-address=0x7e9b83084000 size=128 GiB)
+cuKLEE: Bug Detected: vllm-0.9.0/csrc/quantization/fp8/common.cu:19: integer overflow
+cuKLEE: Bug Detected: vllm-0.9.0/csrc/quantization/fp8/common.cu:19: integer overflow
+cuKLEE: Bug Detected: vllm-0.9.0/csrc/quantization/fp8/common.cu:19: integer overflow
+cuKLEE: Bug Detected: vllm-0.9.0/csrc/quantization/fp8/common.cuh:128: integer overflow
+cuKLEE: Bug Detected: vllm-0.9.0/csrc/quantization/fp8/common.cuh:128: integer overflow
+cuKLEE: Bug Detected: vllm-0.9.0/csrc/quantization/fp8/common.cuh:128: integer overflow
+cuKLEE: Bug Detected: vllm-0.9.0/csrc/quantization/fp8/common.cu:19: integer overflow
+cuKLEE: Bug Detected: vllm-0.9.0/csrc/quantization/fp8/common.cu:19: integer overflow
+cuKLEE: Bug Detected: vllm-0.9.0/csrc/quantization/fp8/common.cuh:128: integer overflow
+cuKLEE: Bug Detected: vllm-0.9.0/csrc/quantization/fp8/common.cuh:128: integer overflow

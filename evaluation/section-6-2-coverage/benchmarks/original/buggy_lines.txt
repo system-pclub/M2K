@@ -1,0 +1,20 @@
+68/attention_kernels.cu: 159
+1295/gemm_kernels.cu: 93, 291
+1514-1/attention_kernels.cu: 192
+1514-2/cache_kernels.cu: 26, 27, 29, 30
+1841/pos_encoding_kernels.cu: 22, 28
+1959/activation_kernels.cu: 43
+2164/pos_encoding_kernels.cu: 63
+5169/punica/bgmv/bgmv_impl.cuh: 73, 74
+6649/quantization/fp8/common.cu: 167, 173
+6798/gptq_marlin.cu: 865
+9391-1/quantization/compressed_tensors/int8_quant_kernels.cu: 104
+9391-2/quantization/compressed_tensors/int8_quant_kernels.cu: 119
+9391-3/quantization/compressed_tensors/int8_quant_kernels.cu: 135, 154
+9391-4/quantization/compressed_tensors/int8_quant_kernels.cu: 168, 203
+9425/quantization/fp8/common.cu: 207
+10928/causal_conv1d.cu: 361, 434, 441
+12413/moe/moe_align_sum_kernels.cu: 39, 48
+26192/layernorm_kernels.cu: 23, 37
+18245/marlin_template.h: 1771
+9838/causal_conv1d.cu: 449

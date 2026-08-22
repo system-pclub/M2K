@@ -9261,6 +9261,19 @@ bool shouldExitOn(StateTerminationType reason) {
   return it != ExitOnErrorType.end();
 }
 
+static bool shouldReportBug(StateTerminationType reason,
+                            const std::string &message) {
+  if (reason == StateTerminationType::Overflow ||
+      reason == StateTerminationType::RACE)
+    return true;
+
+  if (reason != StateTerminationType::Ptr)
+    return false;
+
+  return message.find("out of bound") != std::string::npos ||
+         message.find("null pointer") != std::string::npos;
+}
+
 void Executor::terminateStateOnError(ExecutionState &state,
                                      const llvm::Twine &messaget,
                                      StateTerminationType terminationType,
@@ -9271,14 +9284,7 @@ void Executor::terminateStateOnError(ExecutionState &state,
   Instruction * lastInst;
   const InstructionInfo &ii = getLastNonKleeInternalInstruction(state, &lastInst);
   storeBuggyQuery(state, terminationType, message, ii.file.empty() ? -1 : ii.line, ii.assemblyLine);
-  bool print_bug = true;
-  if (terminationType != StateTerminationType::Ptr && terminationType != StateTerminationType::Overflow && terminationType != StateTerminationType::RACE) {
-    print_bug = false;
-  }
-
-  if (terminationType == StateTerminationType::Ptr && (message.find("out of bound") == std::string::npos) || (message.find("null pointer") != std::string::npos)) {
-    print_bug = false;
-  }
+  bool print_bug = shouldReportBug(terminationType, message);
 
   if (print_bug) {
     if (!ii.file.empty()) {
@@ -9316,10 +9322,7 @@ void Executor::terminateStateOnError(ExecutionState &state,
 
 void Executor::storeBuggyQuery(ExecutionState &state, StateTerminationType reason, std::string message, unsigned sourceLine, unsigned assemblyLine) {
   if (isLoopCheck) return;
-  if (reason != StateTerminationType::Ptr && reason != StateTerminationType::Overflow && reason != StateTerminationType::RACE) {
-    return;
-  }
-  if (reason == StateTerminationType::Ptr && (message.find("out of bound") == std::string::npos) || (message.find("null pointer") != std::string::npos)) {
+  if (!shouldReportBug(reason, message)) {
     return;
   }
 
@@ -14546,6 +14549,10 @@ void Executor::executeMemoryOperation(ExecutionState &state,
         uint64_t addressValue = dyn_cast<ConstantExpr>(address)->getZExtValue();
         if (addressValue == 0) {
           terminateStateOnProgramError(state, "null pointer dereference", StateTerminationType::Ptr);
+          return;
+        }
+        if (!success) {
+          terminateStateOnProgramError(state, "out of bound pointer", StateTerminationType::Ptr);
           return;
         }
       }

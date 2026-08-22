@@ -1,0 +1,105 @@
+cuKLEE: WARNING: --use-merge enabled. Using NURS_CovNew as default searcher.
+cuKLEE: WARNING ONCE: unsupported intrinsic llvm.nvvm.read.ptx.sreg.ntid.x
+cuKLEE: WARNING ONCE: unsupported intrinsic llvm.nvvm.read.ptx.sreg.ctaid.x
+cuKLEE: WARNING ONCE: unsupported intrinsic llvm.nvvm.read.ptx.sreg.tid.x
+cuKLEE: WARNING ONCE: unsupported intrinsic llvm.nvvm.read.ptx.sreg.nctaid.x
+cuKLEE: WARNING ONCE: unsupported intrinsic llvm.nvvm.fmin.d
+cuKLEE: WARNING ONCE: unsupported intrinsic llvm.nvvm.fmax.d
+cuKLEE: WARNING ONCE: unsupported intrinsic llvm.nvvm.fabs.f
+cuKLEE: WARNING ONCE: unsupported intrinsic llvm.nvvm.barrier0
+cuKLEE: WARNING ONCE: unsupported intrinsic llvm.nvvm.fmax.f
+cuKLEE: WARNING ONCE: unsupported intrinsic llvm.nvvm.read.ptx.sreg.tid.z
+cuKLEE: WARNING ONCE: unsupported intrinsic llvm.nvvm.read.ptx.sreg.tid.y
+cuKLEE: WARNING ONCE: unsupported intrinsic llvm.nvvm.fmin.f
+cuKLEE: WARNING: undefined reference to variable: _ZN3c1019UndefinedTensorImpl10_singletonE
+cuKLEE: WARNING: undefined reference to function: _ZN3c104cuda12device_countEv
+cuKLEE: WARNING: undefined reference to function: _ZN3c104cuda14ExchangeDeviceEa
+cuKLEE: WARNING: undefined reference to function: _ZN3c104cuda14MaybeSetDeviceEa
+cuKLEE: WARNING: undefined reference to function: _ZN3c104cuda17getStreamFromPoolEba
+cuKLEE: WARNING: undefined reference to function: _ZN3c104cuda17getStreamFromPoolEia
+cuKLEE: WARNING: undefined reference to variable: _ZN3c104cuda20CUDACachingAllocator9allocatorE
+cuKLEE: WARNING: undefined reference to function: _ZN3c104cuda20getCurrentCUDAStreamEa
+cuKLEE: WARNING: undefined reference to function: _ZN3c104cuda20getDefaultCUDAStreamEa
+cuKLEE: WARNING: undefined reference to function: _ZN3c104cuda20setCurrentCUDAStreamENS0_10CUDAStreamE
+cuKLEE: WARNING: undefined reference to function: _ZN3c104cuda21warn_or_error_on_syncEv
+cuKLEE: WARNING: undefined reference to function: _ZN3c104cuda29c10_cuda_check_implementationEiPKcS2_jb
+cuKLEE: WARNING: undefined reference to function: _ZN3c104cuda9GetDeviceEPa
+cuKLEE: WARNING: undefined reference to function: _ZN3c104cuda9SetDeviceEab
+cuKLEE: WARNING: undefined reference to variable: _ZN3c104impl26device_guard_impl_registryE
+cuKLEE: WARNING: undefined reference to variable: _ZN3c104impl8GPUTrace13gpuTraceStateE
+cuKLEE: WARNING: undefined reference to variable: _ZN3c104impl8GPUTrace9haveStateE
+cuKLEE: WARNING: undefined reference to function: _ZN3c104warnERKNS_7WarningE
+cuKLEE: WARNING: undefined reference to function: _ZN3c105ErrorC2ENS_14SourceLocationENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+cuKLEE: WARNING: undefined reference to function: _ZN3c106detail14torchCheckFailEPKcS2_jRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+cuKLEE: WARNING: undefined reference to function: _ZN3c106detail14torchCheckFailEPKcS2_jS2_
+cuKLEE: WARNING: undefined reference to function: _ZN3c106detail19maybe_wrap_dim_slowIlEET_S2_S2_b
+cuKLEE: WARNING: undefined reference to function: _ZN3c106detail23torchInternalAssertFailEPKcS2_jS2_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+cuKLEE: WARNING: undefined reference to function: _ZN3c106detail23torchInternalAssertFailEPKcS2_jS2_S2_
+cuKLEE: WARNING: undefined reference to function: _ZN3c107WarningC1ESt7variantIJNS0_11UserWarningENS0_18DeprecationWarningEEERKNS_14SourceLocationENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEb
+cuKLEE: WARNING: undefined reference to function: _ZN3c10lsERSoNS_10DeviceTypeE
+cuKLEE: WARNING: undefined reference to function: _ZN3c10lsERSoRKNS_6DeviceE
+cuKLEE: WARNING: undefined reference to function: _ZN6caffe28TypeMeta26error_unsupported_typemetaES0_
+cuKLEE: WARNING: undefined reference to function: _ZNK2at10TensorBase8data_ptrIN3c1013Float8_e4m3fnEEEPT_v
+cuKLEE: WARNING: undefined reference to function: _ZNK2at10TensorBase8data_ptrIN3c104HalfEEEPT_v
+cuKLEE: WARNING: undefined reference to function: _ZNK2at10TensorBase8data_ptrIN3c108BFloat16EEEPT_v
+cuKLEE: WARNING: undefined reference to function: _ZNK2at10TensorBase8data_ptrIfEEPT_v
+cuKLEE: WARNING: undefined reference to function: _ZNK3c1017SymbolicShapeMeta18init_is_contiguousEv
+cuKLEE: WARNING: undefined reference to function: _ZNK3c1017SymbolicShapeMeta32init_is_channels_last_contiguousEv
+cuKLEE: WARNING: undefined reference to function: _ZNK3c1017SymbolicShapeMeta35init_is_channels_last_3d_contiguousEv
+cuKLEE: WARNING: undefined reference to function: _ZNK3c104cuda10CUDAStream6streamEv
+cuKLEE: WARNING: undefined reference to function: _ZNK3c105Error4whatEv
+cuKLEE: WARNING: undefined reference to function: _ZNK3c107SymBool10guard_boolEPKcl
+cuKLEE: WARNING: undefined reference to function: _ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE5c_strEv
+cuKLEE: WARNING: undefined reference to function: _ZNKSt7__cxx1119basic_ostringstreamIcSt11char_traitsIcESaIcEE3strEv
+cuKLEE: WARNING: undefined reference to function: _ZNSolsEi
+cuKLEE: WARNING: undefined reference to function: _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEED1Ev
+cuKLEE: WARNING: undefined reference to function: _ZNSt7__cxx1119basic_ostringstreamIcSt11char_traitsIcESaIcEEC1Ev
+cuKLEE: WARNING: undefined reference to function: _ZNSt7__cxx1119basic_ostringstreamIcSt11char_traitsIcESaIcEED1Ev
+cuKLEE: WARNING: undefined reference to function: _ZNSt8ios_base4InitC1Ev
+cuKLEE: WARNING: undefined reference to function: _ZNSt8ios_base4InitD1Ev
+cuKLEE: WARNING: undefined reference to function: _ZNSt9exceptionD2Ev
+cuKLEE: WARNING: undefined reference to function: _ZSt9terminatev
+cuKLEE: WARNING: undefined reference to function: _ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc
+cuKLEE: WARNING: undefined reference to function: _ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_a
+cuKLEE: WARNING: undefined reference to function: _ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_c
+cuKLEE: WARNING: undefined reference to variable: _ZTIN3c105ErrorE
+cuKLEE: WARNING: undefined reference to variable: _ZTISt9exception
+cuKLEE: WARNING: undefined reference to variable: _ZTVN3c105ErrorE
+cuKLEE: WARNING: undefined reference to variable: _ZTVSt9exception
+cuKLEE: WARNING: undefined reference to function: __cxa_allocate_exception
+cuKLEE: WARNING: undefined reference to function: __cxa_atexit
+cuKLEE: WARNING: undefined reference to function: __cxa_begin_catch
+cuKLEE: WARNING: undefined reference to function: __cxa_free_exception
+cuKLEE: WARNING: undefined reference to function: __cxa_guard_acquire
+cuKLEE: WARNING: undefined reference to function: __cxa_guard_release
+cuKLEE: WARNING: undefined reference to function: __cxa_pure_virtual
+cuKLEE: WARNING: undefined reference to function: __cxa_throw
+cuKLEE: WARNING: undefined reference to function: __gxx_personality_v0
+cuKLEE: WARNING: undefined reference to variable: __libc_single_threaded
+cuKLEE: WARNING: undefined reference to function: cudaDeviceSynchronize
+cuKLEE: WARNING: undefined reference to function: cudaEventCreateWithFlags
+cuKLEE: WARNING: undefined reference to function: cudaEventDestroy
+cuKLEE: WARNING: undefined reference to function: cudaEventElapsedTime
+cuKLEE: WARNING: undefined reference to function: cudaEventQuery
+cuKLEE: WARNING: undefined reference to function: cudaEventRecord
+cuKLEE: WARNING: undefined reference to function: cudaEventSynchronize
+cuKLEE: WARNING: undefined reference to function: cudaGetErrorString
+cuKLEE: WARNING: undefined reference to function: cudaGetLastError
+cuKLEE: WARNING: undefined reference to function: cudaStreamQuery
+cuKLEE: WARNING: undefined reference to function: cudaStreamSynchronize
+cuKLEE: WARNING: undefined reference to function: cudaStreamWaitEvent
+cuKLEE: WARNING ONCE: calling external: __cxa_guard_acquire(140455279345664) at vllm-0.9.0/csrc/quantization/fp8/common.cu:0 0
+cuKLEE: WARNING ONCE: calling external: __cxa_guard_release(140455279345664) at vllm-0.9.0/csrc/quantization/fp8/common.cu:0 0
+cuKLEE: WARNING ONCE: calling external: _ZNSt8ios_base4InitC1Ev(140454339821568) at vllm-0.9.0/csrc/quantization/fp8/common.cu:0 0
+cuKLEE: WARNING: ignore __cudaPopCallConfiguration
+cuKLEE: WARNING: handle cudaLaunchKernel
+cuKLEE: WARNING: ignore __cudaPopCallConfiguration
+cuKLEE: WARNING: ignore __cudaPopCallConfiguration
+cuKLEE: WARNING: handle cudaLaunchKernel
+cuKLEE: WARNING: handle cudaLaunchKernel
+cuKLEE: WARNING: ignore __cudaPopCallConfiguration
+cuKLEE: WARNING: handle cudaLaunchKernel
+cuKLEE: WARNING: ignore __cudaPopCallConfiguration
+cuKLEE: WARNING: handle cudaLaunchKernel
+cuKLEE: WARNING: ignore __cudaPopCallConfiguration
+cuKLEE: WARNING: handle cudaLaunchKernel

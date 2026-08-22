@@ -1,0 +1,19 @@
+klee --disable-verify --warnings-only-to-file --single-object-resolution=true --external-calls=over-approx --max-depth=1024 --debug-print-instructions=all:file --entry-point=_Z24dynamic_scaled_fp8_quantRN2at6TensorERKS0_S1_ --cuda-type=caller --func-config=example/dynamic_scaled_fp8_quant.json --jindex=0 --output-dir=example/out --use-merge /data/mvh6224-home/M2K-Artifact/example/fp8_common_combined_modified.bc
+PID: 3311145
+Using monotonic steady clock with 1/1000000000s resolution
+Started: 2026-08-22 06:13:37
+BEGIN searcher description
+MergingSearcher
+END searcher description
+Finished: 2026-08-22 06:14:41
+Elapsed: 00:01:04
+cuKLEE: done: explored paths = 27
+cuKLEE: done: avg. constructs per query = 159
+cuKLEE: done: total queries = 183
+cuKLEE: done: valid queries = 39
+cuKLEE: done: invalid queries = 144
+cuKLEE: done: query cex = 183
+
+cuKLEE: done: total instructions = 13680
+cuKLEE: done: completed paths = 5
+cuKLEE: done: partially completed paths = 22

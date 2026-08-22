@@ -26,6 +26,7 @@
 #include <future>
 #include <cstdlib>
 #include <chrono>
+#include <unistd.h>
 
 using namespace llvm;
 namespace fs = std::filesystem;
@@ -391,9 +392,21 @@ std::string mangleFunctionName(const std::string &qualifiedName,
     return oss.str();
 }
 
-std::string getModifiedFilePath(const std::string &inputFilePath) {
+std::string getModifiedFilePath(const std::string &inputFilePath, const std::string &outputDir) {
     fs::path inputPath(inputFilePath);
-    fs::path outputPath = inputPath.parent_path() / (inputPath.stem().string() + "_modified.bc");
+    fs::path outputPathDir = inputPath.parent_path();
+
+    if (!outputDir.empty()) {
+        outputPathDir = fs::path(outputDir) / ".cuklee-work" / std::to_string(getpid());
+        std::error_code ec;
+        fs::create_directories(outputPathDir, ec);
+        if (ec) {
+            std::cerr << "Failed to create cuKLEE work directory "
+                      << outputPathDir << ": " << ec.message() << "\n";
+        }
+    }
+
+    fs::path outputPath = outputPathDir / (inputPath.stem().string() + "_modified.bc");
     return outputPath.string();
 }
 
@@ -526,7 +539,7 @@ int main(int argc, char **argv) {
                     inputFilePath = (projectPath / inputFilePath).string();
                 }
 
-                std::string modifiedFilePath = getModifiedFilePath(inputFilePath);
+                std::string modifiedFilePath = getModifiedFilePath(inputFilePath, OutputDir);
                 runOptCommand(inputFilePath, modifiedFilePath);
                 LLVMContext context;
                 SMDiagnostic error;
@@ -578,7 +591,7 @@ int main(int argc, char **argv) {
             }
         }
     } else if (arg1.find(".bc") != std::string::npos) {
-        std::string modifiedFilePath = getModifiedFilePath(arg1);
+        std::string modifiedFilePath = getModifiedFilePath(arg1, OutputDir);
         runOptCommand(arg1, modifiedFilePath);
 
         LLVMContext context;

@@ -12,5 +12,6 @@ python3 cuKLEE/run.py --run-small --input-dir=evaluation/section-6-1-bug-detecti
 python3 cuKLEE/run.py --input-dir=evaluation/section-6-1-bug-detection/small_dataset_results/huggingface/input --cuklee-out-dir=cuKLEE/results-small/huggingface/out --log-dir=cuKLEE/results-small/huggingface/log
 python3 cuKLEE/run.py --input-dir=evaluation/section-6-1-bug-detection/small_dataset_results/papers/input --cuklee-out-dir=cuKLEE/results-small/papers/out --log-dir=cuKLEE/results-small/papers/log
 
-# python3 HFProbe/validation/run_vllm_validation.py --dir --cuklee-out-dir=cuKLEE/results-small/vllm/out --profile-out-dir=evaluation/section-6-1-bug-detection/small_dataset_results/vllm
-# python3 HFProbe/validation/run_hf_validation.py --dir --cuklee-out-dir=cuKLEE/results-small/huggingface/out --profile-out-dir=evaluation/section-6-1-bug-detection/small_dataset_results/huggingface
+python3 HFProbe/validation/run_vllm_validation.py --dir --cuklee-out-dir=cuKLEE/results-small/vllm/out --profile-out-dir=evaluation/section-6-1-bug-detection/small_dataset_results/vllm
+python3 HFProbe/validation/run_hf_validation.py --dir --cuklee-out-dir=cuKLEE/results-small/huggingface/out --profile-out-dir=evaluation/section-6-1-bug-detection/small_dataset_results/huggingface
+python3 HFProbe/validation/run_rs_validation.py --dir --cuklee-out-dir=cuKLEE/results-small/papers/out --profile-out-dir=evaluation/section-6-1-bug-detection/small_dataset_results/papers

@@ -10,6 +10,7 @@ MAX_ENTRIES = 4
 
 def run_klee_on_json_file(json_file, logDir, outputdir, useDirName=False):
     if "swap_blocks" in json_file:
+        print(f"Skipping {json_file}: no GPU kernel is launched.")
         return True
     
     one_timeout = 3600

@@ -1,0 +1,20 @@
+vllm68.cu: 51
+vllm1295.cu: 155
+vllm1514-1.cu: 51
+vllm1514-2.cu: 38, 42
+vllm1841.cu: 70
+vllm1959.cu: 38
+vllm2164.cu: 78
+vllm5169.cu: 47
+vllm6649.cu: 42
+vllm6798.cu: 46
+vllm9391.cu: 53
+vllm9391-2.cu: 51
+vllm9391-3.cu: 63
+vllm9391-4.cu: 83
+vllm9425.cu: 41
+vllm10928.cu: 49
+vllm12413.cu: 62
+vllm26192.cu: 57
+vllm18245.cu: 66
+vllm9838.cu: 64

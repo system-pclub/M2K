@@ -51,7 +51,7 @@ bash x scan --vllm-model-arch=Qwen2ForCausalLM --kernel-info-out=opout
 `bash x scan` accepts the following options:
 
 - `--kernel-info-out=<dir>` — directory that stores information about the possibly-triggered kernels (default: `HFProbe/call-graph/opout`).
-- `--vllm-dir=<dir>` — directory of the vLLM repository (ensure not to contain "." in the absolute path); if unset, copy the installed vLLM to HFProbe/vllm (ensure the absolute path of HFProbe does not contain ".").
+- `--vllm-dir=<dir>` — directory of the vLLM package (ensure not to contain "." in the absolute path); if unset, copy the installed vLLM to HFProbe/vllm (ensure the absolute path of HFProbe does not contain ".").
 - `--vllm-model-arch=<arch>` — model architecture of the target model; if unset, all vLLM model architectures are analyzed.
 
 **Console output:**
@@ -543,7 +543,9 @@ bash run_small.sh
 ```
 (take ~5h)
 
-The output is stored at `${REPO_ROOT}/cuKLEE/results-small/<vllm/huggingface/papers>/log`. The detailed labels for each report are summarized in [this Google Sheet](https://docs.google.com/spreadsheets/d/1Q_6QZbl2I0xCotst-8ei2ZysvldA6D2HHegWKmv9y1o/edit?gid=411201267#gid=411201267). The `S` column in the Google Sheet reports the estimated GPU memory size for each detected bug. Figure 5 is drawn based on this column and the memory size of different GPU models. The value of each data point in the figure is available in [this Google Sheet](https://docs.google.com/spreadsheets/d/1Q_6QZbl2I0xCotst-8ei2ZysvldA6D2HHegWKmv9y1o/edit?gid=292022127#gid=292022127).
+Symbolic-execution logs and outputs are stored in `${REPO_ROOT}/cuKLEE/results-small/<vllm/huggingface/papers>/log` and `${REPO_ROOT}/cuKLEE/results-small/<vllm/huggingface/papers>/out`.
+Validation results are written to `${REPO_ROOT}/evaluation/section-6-1-bug-detection/small_dataset_results/<vllm/huggingface>/benchmark_validation_results.json`.
+The detailed labels for each report are summarized in [this Google Sheet](https://docs.google.com/spreadsheets/d/1Q_6QZbl2I0xCotst-8ei2ZysvldA6D2HHegWKmv9y1o/edit?gid=411201267#gid=411201267). The `S` column in the Google Sheet reports the estimated GPU memory size for each detected bug. Figure 5 is drawn based on this column and the memory size of different GPU models. The value of each data point in the figure is available in [this Google Sheet](https://docs.google.com/spreadsheets/d/1Q_6QZbl2I0xCotst-8ei2ZysvldA6D2HHegWKmv9y1o/edit?gid=292022127#gid=292022127).
 
 **Execute `run_benchmark.sh`:**
 
@@ -555,8 +557,8 @@ cd evaluation/section-6-1-bug-detection
 bash run_benchmark.sh
 ```
 
-The output of cuKLEE is stored at  `${REPO_ROOT}/cuKLEE/results/<vllm/huggingface/papers>/log`. 
-The output of the validation is stored at `${REPO_ROOT}/evaluation/section-6-1-bug-detection/new_results/<vllm/huggingface>/benchmark_validation_results.json`. 
+Symbolic-execution logs and outputs are stored in `${REPO_ROOT}/cuKLEE/results/<vllm/huggingface/papers>/log` and `${REPO_ROOT}/cuKLEE/results/<vllm/huggingface/papers>/out`.
+Validation results are written to `${REPO_ROOT}/evaluation/section-6-1-bug-detection/new_results/<vllm/huggingface>/benchmark_validation_results.json`.
 
 
 ## 6. Coverage and Advancement (Section 6.2)
@@ -647,6 +649,12 @@ To quickly localize detected bugs, reviewers can try the following command.
 ```bash
 grep -R -E "Violated property|VERIFICATION (FAILED|SUCCESSFUL)" \
   evaluation/section-6-2-coverage/esbmc/results
+```
+
+The following command summarizes the tool outputs.
+```bash
+cd evaluation/section-6-2-coverage
+python3 verify_results.py
 ```
 
 ## 7. Rationality of Components (Section 6.3)

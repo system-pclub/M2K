@@ -1,0 +1,4 @@
+running opt-13 -load-pass-plugin /data/mvh6224-home/M2K-Artifact/cuKLEE/build/libSignednessPropagationPass.so -passes=signedness-prop </data/mvh6224-home/M2K-Artifact/example/fp8_common_combined.bc > /data/mvh6224-home/M2K-Artifact/example/fp8_common_combined_modified.bc
+Pass applied. Modified file: /data/mvh6224-home/M2K-Artifact/example/fp8_common_combined_modified.bc
+running klee --disable-verify --warnings-only-to-file --single-object-resolution=true --external-calls=over-approx --max-depth=1024 --debug-print-instructions=all:file --entry-point=_Z24dynamic_scaled_fp8_quantRN2at6TensorERKS0_S1_ --cuda-type=caller --func-config=example/dynamic_scaled_fp8_quant.json --jindex=0 --output-dir=example/out --use-merge /data/mvh6224-home/M2K-Artifact/example/fp8_common_combined_modified.bc
+
