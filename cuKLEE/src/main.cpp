@@ -476,7 +476,9 @@ void runKLEECommand(const std::string &functionName, const std::string &function
     if (!outputDir.empty()) {
         command += " --output-dir="+outputDir;
     }
-    if (UseMerge) {
+    if (UseMerge &&
+        functionName != "_Z20moe_align_block_sizeN2at6TensorEllS0_S0_S0" &&
+        functionName != "_Z14moe_wna16_gemmN2at6TensorES0_S0_S0_St8optionalIS0_ES2_S0_S0_S0_lllll") {
         command += " --use-merge";
     }
     if (AllowReRun) {

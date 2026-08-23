@@ -1918,6 +1918,73 @@ std::string Executor::getSymName(ExecutionState &state, const MemoryObject *mo, 
 
 void Executor::executeCall(ExecutionState &state, KInstruction *ki, Function *f,
                            std::vector<ref<Expr>> &arguments) {
+  // if (f->getName() == "_ZN4vllm10ScalarType7from_idEl" && arguments.size() == 1) {
+  //   ref<Expr> id = arguments[0];
+  //   if (id->getWidth() != Expr::Int64)
+  //     id = ZExtExpr::create(id, Expr::Int64);
+
+  //   ref<Expr> exponent = ExtractExpr::create(id, 0, Expr::Int8);
+  //   ref<Expr> mantissa = ExtractExpr::create(id, 8, Expr::Int8);
+  //   ref<Expr> signed_ = ZExtExpr::create(ExtractExpr::create(id, 16, Expr::Bool), Expr::Int8);
+  //   ref<Expr> bias = ExtractExpr::create(id, 17, Expr::Int32);
+  //   ref<Expr> finiteValuesOnly = ZExtExpr::create(ExtractExpr::create(id, 49, Expr::Bool), Expr::Int8);
+  //   ref<Expr> nanRepr = ExtractExpr::create(id, 50, Expr::Int8);
+
+  //   ref<Expr> low64 = ConcatExpr::create(
+  //       bias,
+  //       ConcatExpr::create(
+  //           ConstantExpr::create(0, Expr::Int8),
+  //           ConcatExpr::create(signed_,
+  //                              ConcatExpr::create(mantissa, exponent))));
+  //   ref<Expr> high32 = ConcatExpr::create(
+  //       ConstantExpr::create(0, Expr::Int16),
+  //       ConcatExpr::create(nanRepr, finiteValuesOnly));
+  //   bindLocal(ki, state, ConcatExpr::create(high32, low64));
+  //   return;
+  // }
+
+  // if (f->getName() == "_ZNK4vllm10ScalarTypeeqERKS0_" && arguments.size() == 2) {
+  //   bool success;
+  //   ObjectPair leftOp;
+  //   if (!state.addressSpace.resolveOne(state, solver.get(), arguments[0], leftOp, success) || !success) {
+  //     terminateStateOnProgramError(state, "ScalarType::operator==: do not find left ScalarType object",
+  //                                  StateTerminationType::ReportError);
+  //     return;
+  //   }
+
+  //   ObjectPair rightOp;
+  //   if (!state.addressSpace.resolveOne(state, solver.get(), arguments[1], rightOp, success) || !success) {
+  //     terminateStateOnProgramError(state, "ScalarType::operator==: do not find right ScalarType object",
+  //                                  StateTerminationType::ReportError);
+  //     return;
+  //   }
+
+  //   ref<Expr> leftBaseOffset = leftOp.first->getOffsetExpr(arguments[0]);
+  //   ref<Expr> rightBaseOffset = rightOp.first->getOffsetExpr(arguments[1]);
+  //   auto readScalarTypeField = [](const ObjectPair &op, ref<Expr> baseOffset,
+  //                                 uint64_t offset, Expr::Width width) -> ref<Expr> {
+  //     ref<Expr> fieldOffset = AddExpr::create(baseOffset,
+  //                                             ConstantExpr::create(offset, Expr::Int64));
+  //     return op.second->read(fieldOffset, width);
+  //   };
+
+  //   ref<Expr> result;
+  //   const std::pair<uint64_t, Expr::Width> fields[] = {
+  //       {1, Expr::Int8}, {0, Expr::Int8}, {4, Expr::Int32},
+  //       {2, Expr::Int8}, {8, Expr::Int8}, {9, Expr::Int8}};
+
+  //   for (const auto &field : fields) {
+  //     ref<Expr> left = readScalarTypeField(leftOp, leftBaseOffset, field.first, field.second);
+  //     ref<Expr> right = readScalarTypeField(rightOp, rightBaseOffset, field.first, field.second);
+
+  //     ref<Expr> eq = EqExpr::create(left, right);
+  //     result = result.isNull() ? eq : AndExpr::create(result, eq);
+  //   }
+
+  //   bindLocal(ki, state, result);
+  //   return;
+  // }
+
   if (f->getName().find("c1013intrusive_ptrINS_10TensorImplENS_19UndefinedTensorImpl")!=std::string::npos || 
       f->getName().find("at10TensorBase19unsafeGetTensorImplEv")!=std::string::npos) {
     bindLocal(ki, state, arguments[0]);
@@ -11499,9 +11566,9 @@ void Executor::callExternalFunction(ExecutionState &state, KInstruction *target,
     wos->write(344, ConstantExpr::create(65535, Expr::Int32));      // maxGridSize Z
     wos->write(348, ConstantExpr::create(1500000, Expr::Int32)); // clockRate: 1.5 GHz
     wos->write(352, ConstantExpr::create(64 * 1024, Expr::Int64)); // totalConstMem: 64 KB
-    wos->write(360, ConstantExpr::create(9, Expr::Int32)); // Compute Capability major 9.x
-    wos->write(364, ConstantExpr::create(0, Expr::Int32)); // Compute Capability minor 9.0
-    wos->write(388, ConstantExpr::create(90, Expr::Int32));       // multiProcessorCount
+    wos->write(360, ConstantExpr::create(8, Expr::Int32)); // Compute Capability major 8.x
+    wos->write(364, ConstantExpr::create(0, Expr::Int32)); // Compute Capability minor 8.0
+    wos->write(388, ConstantExpr::create(80, Expr::Int32));       // multiProcessorCount
     wos->write(624, ConstantExpr::create(2048, Expr::Int32));     // maxThreadsPerMultiProcessor
     wos->write(640, ConstantExpr::create(65536, Expr::Int64));    // sharedMemPerMultiprocessor
     wos->write(648, ConstantExpr::create(65536, Expr::Int32));    // regsPerMultiprocessor
@@ -11539,9 +11606,9 @@ void Executor::callExternalFunction(ExecutionState &state, KInstruction *target,
     os->write(344, ConstantExpr::create(65535, Expr::Int32));      // maxGridSize Z
     os->write(348, ConstantExpr::create(1500000, Expr::Int32)); // clockRate: 1.5 GHz
     os->write(352, ConstantExpr::create(64 * 1024, Expr::Int64)); // totalConstMem: 64 KB
-    os->write(360, ConstantExpr::create(9, Expr::Int32)); // Compute Capability major 9.x
-    os->write(364, ConstantExpr::create(0, Expr::Int32)); // Compute Capability minor   9.0
-    os->write(388, ConstantExpr::create(90, Expr::Int32));       // multiProcessorCount
+    os->write(360, ConstantExpr::create(8, Expr::Int32)); // Compute Capability major 8.x
+    os->write(364, ConstantExpr::create(0, Expr::Int32)); // Compute Capability minor   8.0
+    os->write(388, ConstantExpr::create(80, Expr::Int32));       // multiProcessorCount
     os->write(624, ConstantExpr::create(2048, Expr::Int32));     // maxThreadsPerMultiProcessor
     os->write(640, ConstantExpr::create(65536, Expr::Int64));    // sharedMemPerMultiprocessor
     os->write(648, ConstantExpr::create(65536, Expr::Int32));    // regsPerMultiprocessor

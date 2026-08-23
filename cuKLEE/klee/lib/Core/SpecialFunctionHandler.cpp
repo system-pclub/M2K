@@ -1094,7 +1094,7 @@ void SpecialFunctionHandler::handleCudaDeviceGetAttribute(ExecutionState &state,
       if (kind == 1) {
         value = ConstantExpr::create(1024, Expr::Int32);
       } else if (kind == 16) {
-        value = ConstantExpr::create(90, Expr::Int32);
+        value = ConstantExpr::create(80, Expr::Int32);
       } else if (kind == 97) {
         value = ConstantExpr::create(228*1024, Expr::Int32);
       } else if (kind == 75) {
