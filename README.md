@@ -548,6 +548,7 @@ bash run_small.sh
 
 Symbolic-execution logs and outputs are stored in `${REPO_ROOT}/cuKLEE/results-small/<vllm/huggingface/papers>/log` and `${REPO_ROOT}/cuKLEE/results-small/<vllm/huggingface/papers>/out`.
 Validation results are written to `${REPO_ROOT}/evaluation/section-6-1-bug-detection/small_dataset_results/<vllm/huggingface>/benchmark_validation_results.json`.
+
 The detailed labels for each report are summarized in [this Google Sheet](https://docs.google.com/spreadsheets/d/1Q_6QZbl2I0xCotst-8ei2ZysvldA6D2HHegWKmv9y1o/edit?gid=411201267#gid=411201267). The `S` column in the Google Sheet reports the estimated GPU memory size for each detected bug. Figure 5 is drawn based on this column and the memory size of different GPU models. The value of each data point in the figure is available in [this Google Sheet](https://docs.google.com/spreadsheets/d/1Q_6QZbl2I0xCotst-8ei2ZysvldA6D2HHegWKmv9y1o/edit?gid=292022127#gid=292022127).
 
 **Execute `run_benchmark.sh`:**
@@ -587,7 +588,7 @@ To quickly localize detected bugs, reviewers can try the following command.
 grep -R -E "Bug Detected:" evaluation/section-6-2-coverage/cuKLEE/log-*
 ```
 
-The simplified cuKLEE benchmarks cover 8 of the 20 bugs. For the remaining 12 bugs, cuKLEE uses the corresponding benchmarks from the `original/` directory.
+The simplified cuKLEE benchmarks cover 11 of the 20 bugs. For the remaining 9 bugs, cuKLEE uses the corresponding benchmarks from the `original/` directory.
 
 The buggy source-code locations are listed in `evaluation/section-6-2-coverage/benchmarks/cuKLEE-simplified/buggy_lines.txt` and `evaluation/section-6-2-coverage/benchmarks/original/buggy_lines.txt`.
 
