@@ -30,7 +30,9 @@ simplified_results = {"1514-2": ["cuKLEE: Bug Detected: vllm1514-2.cu:43: intege
                       "18245": "cuKLEE: Bug Detected: src/vllm18245.cu:54: out of bound pointer",
                       "9391": "cuKLEE: Bug Detected: vllm9391.cu:40: integer overflow",
                       "9391-2": ["cuKLEE: Bug Detected: vllm9391-2.cu:42: integer overflow", "cuKLEE: Bug Detected: vllm9391-2.cu:43: integer overflow"],
-                      "9391-3": ["cuKLEE: Bug Detected: vllm9391-3.cu:56: integer overflow", "cuKLEE: Bug Detected: vllm9391-3.cu:76: integer overflow"],}
+                      "9391-3": ["cuKLEE: Bug Detected: vllm9391-3.cu:56: integer overflow", "cuKLEE: Bug Detected: vllm9391-3.cu:76: integer overflow"],
+                      "9391-4": "cuKLEE: Bug Detected: vllm9391-4.cu:79: integer overflow",
+                      "9425": "cuKLEE: Bug Detected: vllm9425.cu:34: integer overflow",}
 
 gklee_results = {"vllm68": 52, "vllm1295": 120, "vllm1514-1": 45, "vllm1514-2": [39, 43], "vllm1841": [37, 43], "vllm1959": 54, 
                  "vllm2164": 83, "vllm5169":45, "vllm6649": 77, "vllm6798": 51, "vllm9391": 35, "vllm9391-2": 38, "vllm9391-3": 54, "vllm9391-4": 77, "vllm9425": 33, "vllm10928": 44, "vllm12413": 59, "vllm26192": 39, "vllm18245": 54, "vllm9838": 47}

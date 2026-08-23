@@ -6,3 +6,6 @@ vllm18245.cu: 54
 vllm9391.cu: 40
 vllm9391-2.cu: 42, 43
 vllm9391-3.cu: 56, 76
+vllm9391-4.cu: 79
+vllm9425.cu: 34
+vllm1959.cu: 54

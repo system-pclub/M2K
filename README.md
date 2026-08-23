@@ -531,6 +531,8 @@ We provide two scripts to reproduce this experiment:
 
 2. **`run_benchmark.sh`** reproduces all experiments reported in this section. Running the script with a single process takes more than one month to complete.
 
+(both do not need GPU)
+
 We recommend that reviewers use `run_small.sh`, as it reproduces the key results while requiring substantially less time.
 
 **Execute `run_small.sh`:**
@@ -540,6 +542,7 @@ We recommend that reviewers use `run_small.sh`, as it reproduces the key results
 export HF_TOKEN=<Hugging Face Token>
 cd evaluation/section-6-1-bug-detection
 bash run_small.sh
+# evaluation/section-6-1-bug-detection/intermediate_results/<vllm/huggingface/papers>/input contains the cuKLEE inputs used in our paper. To skip HFProbe, pass this path to '--input-dir' when running 'python3 cuKLEE/run.py'.
 ```
 (take ~5h)
 
@@ -555,6 +558,7 @@ export HF_TOKEN=<Hugging Face Token>
 export OPENAI_API_KEY=<Openai API Key>
 cd evaluation/section-6-1-bug-detection
 bash run_benchmark.sh
+# evaluation/section-6-1-bug-detection/intermediate_results/<vllm/huggingface/papers>/input contains the cuKLEE inputs used in our paper. To skip HFProbe, pass this path to '--input-dir' when running 'python3 cuKLEE/run.py'.
 ```
 
 Symbolic-execution logs and outputs are stored in `${REPO_ROOT}/cuKLEE/results/<vllm/huggingface/papers>/log` and `${REPO_ROOT}/cuKLEE/results/<vllm/huggingface/papers>/out`.
@@ -583,6 +587,10 @@ To quickly localize detected bugs, reviewers can try the following command.
 grep -R -E "Bug Detected:" evaluation/section-6-2-coverage/cuKLEE/log-*
 ```
 
+The simplified cuKLEE benchmarks cover 8 of the 20 bugs. For the remaining 12 bugs, cuKLEE uses the corresponding benchmarks from the `original/` directory.
+
+The buggy source-code locations are listed in `evaluation/section-6-2-coverage/benchmarks/cuKLEE-simplified/buggy_lines.txt` and `evaluation/section-6-2-coverage/benchmarks/original/buggy_lines.txt`.
+
 **(2) run GKLEE:**
 Run the following commands on your host machine—for example, in your local terminal—not inside a Docker container, because they use docker build and docker run.
 ```bash
@@ -608,6 +616,8 @@ To quickly localize detected bugs, reviewers can try the following command.
 grep -R -E "KLEE: ERROR|KLEE: done" \
   evaluation/section-6-2-coverage/gklee/results
 ```
+
+The buggy source-code locations are listed in `evaluation/section-6-2-coverage/benchmarks/gklee-simplified/buggy_lines.txt`.
 
 **(3) run Honeycomb:**
 Run the following commands on your host machine—for example, in your local terminal—not inside a Docker container, because they use docker build and docker run.
@@ -650,6 +660,8 @@ To quickly localize detected bugs, reviewers can try the following command.
 grep -R -E "Violated property|VERIFICATION (FAILED|SUCCESSFUL)" \
   evaluation/section-6-2-coverage/esbmc/results
 ```
+
+The buggy source-code locations are listed in `evaluation/section-6-2-coverage/benchmarks/esbmc-simplified/buggy_lines.txt`.
 
 The following command summarizes the tool outputs.
 ```bash
@@ -705,7 +717,6 @@ python3 run.py --without=V
 
 The analysis results are stored in the  `${REPO_ROOT}/evaluation/section-6-3-rationality/wo_v/cuklee/log` directory.
 
-Here is a clearer README version:
 
 ## 8. Git LFS Download Issue
 
