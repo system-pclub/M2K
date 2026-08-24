@@ -601,20 +601,55 @@ return false; // failed
 bool Z3SolverImpl::internalRunSolver(
     const Query &query, const std::vector<const Array *> *objects,
     std::vector<std::vector<unsigned char> > *values, bool &hasSolution) {
-    bool res = internalRunSolverInt(query, objects, values, hasSolution, 60*1000);
+    const unsigned oneMinuteMs = 60 * 1000;
+    const unsigned noTimeoutFallbackMs = 20 * 60 * 1000;
+
+    if (timeout) {
+      unsigned timeoutMs =
+          static_cast<unsigned>(timeout.toMicroseconds() / 1000);
+      if (!timeoutMs)
+        timeoutMs = 1;
+
+      unsigned firstTimeoutMs =
+          timeoutMs < oneMinuteMs ? timeoutMs : oneMinuteMs;
+      bool res =
+          internalRunSolverInt(query, objects, values, hasSolution, firstTimeoutMs);
+      if (!res) {
+        if (builder->useReal) {
+          res = internalRunSolverInt(query, objects, values, hasSolution,
+                                     timeoutMs, true);
+          builder->useReal = false;
+          return res;
+        }
+        if (builder->useInt2BV) {
+          builder->useInt2BV = false;
+          return internalRunSolverBV(query, objects, values, hasSolution,
+                                     timeoutMs);
+        }
+        if (timeoutMs > oneMinuteMs)
+          return internalRunSolverBV(query, objects, values, hasSolution,
+                                     timeoutMs);
+      }
+      return res;
+    }
+
+    bool res = internalRunSolverInt(query, objects, values, hasSolution, oneMinuteMs);
     if (!res) {
       if (builder->useReal) {
-        res = internalRunSolverInt(query, objects, values, hasSolution, INT32_MAX, true);
+        res = internalRunSolverInt(query, objects, values, hasSolution,
+                                   noTimeoutFallbackMs, true);
         builder->useReal = false;
         return res;
       }
       if (builder->useInt2BV) {
         builder->useInt2BV = false;
-        return internalRunSolverBV(query, objects, values, hasSolution, UINT_MAX);
+        return internalRunSolverBV(query, objects, values, hasSolution,
+                                   noTimeoutFallbackMs);
       }
       res = internalRunSolverInt(query, objects, values, hasSolution, 2*60000, true);
       if (!res) {
-        return internalRunSolverBV(query, objects, values, hasSolution, UINT_MAX);
+        return internalRunSolverBV(query, objects, values, hasSolution,
+                                   noTimeoutFallbackMs);
       }
     }
     return res;

@@ -34,7 +34,10 @@ def run_klee_on_json_file(json_file, logDir, outputdir, useDirName=False):
         print(f"Running cuKLEE on {json_file}")
         # Run KLEE and capture its output and error in the log file
         with open(log_file, 'w') as output_file:
-            subprocess.run(['cuKLEE', f"--timeout={one_timeout}", f"--cuklee-out-dir={outputdir}", json_file], stdout=output_file, stderr=output_file, timeout=TIMEOUT_LIMIT, check=True)
+            cmd = ['cuKLEE', f"--timeout={one_timeout}", f"--cuklee-out-dir={outputdir}", json_file]
+            if "gptq_marlin_gemm" in json_file:
+                cmd.append("--max-solver-time=2min")
+            subprocess.run(cmd, stdout=output_file, stderr=output_file, timeout=TIMEOUT_LIMIT, check=True)
         
         print(f"Output saved to {log_file}")
     

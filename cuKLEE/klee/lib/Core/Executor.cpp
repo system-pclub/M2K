@@ -9341,6 +9341,15 @@ static bool shouldReportBug(StateTerminationType reason,
          message.find("null pointer") != std::string::npos;
 }
 
+static int getValidSourceLine(unsigned sourceLine) {
+  if (sourceLine == 0 ||
+      sourceLine == std::numeric_limits<unsigned>::max() ||
+      sourceLine > static_cast<unsigned>(std::numeric_limits<int>::max()))
+    return -1;
+
+  return static_cast<int>(sourceLine);
+}
+
 void Executor::terminateStateOnError(ExecutionState &state,
                                      const llvm::Twine &messaget,
                                      StateTerminationType terminationType,
@@ -9350,7 +9359,7 @@ void Executor::terminateStateOnError(ExecutionState &state,
   static std::set< std::pair<Instruction*, std::string> > emittedErrors;
   Instruction * lastInst;
   const InstructionInfo &ii = getLastNonKleeInternalInstruction(state, &lastInst);
-  storeBuggyQuery(state, terminationType, message, ii.file.empty() ? -1 : ii.line, ii.assemblyLine);
+  storeBuggyQuery(state, terminationType, message, ii.file.empty() ? -1 : getValidSourceLine(ii.line), ii.assemblyLine);
   bool print_bug = shouldReportBug(terminationType, message);
 
   if (print_bug) {
@@ -9387,7 +9396,7 @@ void Executor::terminateStateOnError(ExecutionState &state,
     haltExecution = true;
 }
 
-void Executor::storeBuggyQuery(ExecutionState &state, StateTerminationType reason, std::string message, unsigned sourceLine, unsigned assemblyLine) {
+void Executor::storeBuggyQuery(ExecutionState &state, StateTerminationType reason, std::string message, int sourceLine, unsigned assemblyLine) {
   if (isLoopCheck) return;
   if (!shouldReportBug(reason, message)) {
     return;
@@ -9402,7 +9411,7 @@ void Executor::storeBuggyQuery(ExecutionState &state, StateTerminationType reaso
     bugType="dr";
   }
   
-  unsigned callerSourceLine = 0;
+  int callerSourceLine = -1;
   unsigned callerAsmLine = 0;
   if (!state.stack.empty()) {
     const StackFrame &lastFrame = state.stack.back();
@@ -9410,12 +9419,12 @@ void Executor::storeBuggyQuery(ExecutionState &state, StateTerminationType reaso
       if (auto *callerki = dyn_cast<KInstruction>(&*lastFrame.caller)) {
         callerAsmLine = callerki->info->assemblyLine;
         if (sourceLine > 0)
-          callerSourceLine = callerki->info->line;
+          callerSourceLine = getValidSourceLine(callerki->info->line);
       }
     }
   }
 
-  unsigned grandCallerSourceLine = 0;
+  int grandCallerSourceLine = -1;
   unsigned grandCallerAsmLine = 0;
   if (state.stack.size() >= 2) {
     const StackFrame &grandCallerFrame = state.stack[state.stack.size() - 2];
@@ -9423,7 +9432,7 @@ void Executor::storeBuggyQuery(ExecutionState &state, StateTerminationType reaso
       if (auto *grandCallerKI = dyn_cast<KInstruction>(&*grandCallerFrame.caller)) {
         grandCallerAsmLine = grandCallerKI->info->assemblyLine;
         if (sourceLine > 0)
-          grandCallerSourceLine = grandCallerKI->info->line;
+          grandCallerSourceLine = getValidSourceLine(grandCallerKI->info->line);
       }
     }
   }
@@ -9951,8 +9960,6 @@ void Executor::callExternalFunction(ExecutionState &state, KInstruction *target,
             return;
           }
           
-
-
           executeMemoryOperation(state, false, arguments[2], 0, target, bytes);
           ref<Expr> loadedVal = getDestCell(state, target).value;
 
@@ -14288,25 +14295,25 @@ void Executor::storeAddressInLoop(ExecutionState &state, KInstruction *ki, ref<E
     return;
   }
 
-  bool hasSourceLine = !ki->info->file.empty();
+  int sourceLine = ki->info->file.empty() ? -1 : getValidSourceLine(ki->info->line);
   const StackFrame &lastFrame = state.stack.back();
-  unsigned callerSourceLine = 0;
+  int callerSourceLine = -1;
   unsigned callerAsmLine = 0;
   if (auto *callerki = dyn_cast<KInstruction>(&*lastFrame.caller)) {
     callerAsmLine = callerki->info->assemblyLine;
-    if (hasSourceLine)
-      callerSourceLine = callerki->info->line;
+    if (sourceLine > 0)
+      callerSourceLine = getValidSourceLine(callerki->info->line);
   }
 
   unsigned grandCallerAsmLine = 0;
-  unsigned grandCallerSourceLine = 0;
+  int grandCallerSourceLine = -1;
   if (state.stack.size() >= 2) {
     const StackFrame &grandCallerFrame = state.stack[state.stack.size() - 2];
     if (grandCallerFrame.caller) {
       if (auto *grandCallerKI = dyn_cast<KInstruction>(&*grandCallerFrame.caller)) {
         grandCallerAsmLine = grandCallerKI->info->assemblyLine;
-        if (hasSourceLine)
-          grandCallerSourceLine = grandCallerKI->info->line;
+        if (sourceLine > 0)
+          grandCallerSourceLine = getValidSourceLine(grandCallerKI->info->line);
       }
     }
   }
@@ -14321,8 +14328,8 @@ void Executor::storeAddressInLoop(ExecutionState &state, KInstruction *ki, ref<E
   lineId = "asm-"+lineId;
 
   std::string tmp = "";
-  if (hasSourceLine && ki->info->line > 0) {
-    tmp = llvm::utostr(ki->info->line) ;
+  if (sourceLine > 0) {
+    tmp = llvm::utostr(sourceLine) ;
   }
   if (callerSourceLine > 0) {
     tmp+="_"+llvm::utostr(callerSourceLine);
@@ -14953,6 +14960,7 @@ void Executor::executeMemoryOperation(ExecutionState &state,
         offset = SubExpr::create(address, newAddress);
       }
     }
+
     if (state.symbolicArrayMap.find(symName)!=state.symbolicArrayMap.end()) {
       storeAddressInLoop(state, target, address, mo, isWrite);
       symmo = state.symbolicArrayMap[symName];

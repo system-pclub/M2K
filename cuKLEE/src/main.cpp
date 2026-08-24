@@ -68,6 +68,27 @@ cl::opt<unsigned>
             cl::desc("maximum number of entries"),
             cl::init(0));
 
+std::string shellEscape(const std::string &arg) {
+    std::string escaped = "'";
+    for (char c : arg) {
+        if (c == '\'') {
+            escaped += "'\\''";
+        } else {
+            escaped += c;
+        }
+    }
+    escaped += "'";
+    return escaped;
+}
+
+std::string getKLEEExtraArgs() {
+    std::string args;
+    for (const auto &arg : InputArgv) {
+        args += " " + shellEscape(arg);
+    }
+    return args;
+}
+
 
 std::map<std::string, std::set<std::string>> buildCallGraph(const llvm::Module &module) {
     // Map from callee function to set of callers
@@ -439,7 +460,7 @@ void runOptCommand(const std::string &inputFilePath, const std::string &outputFi
 
 void runKLEECommand(const std::string &functionName, const std::string &functionType, const std::string &jsonFile, const std::string &filePath, int i, const std::string &outputDir="") {
     // Run KLEE command with callerFunctionName as entry-point
-    std::string command = "klee --disable-verify --warnings-only-to-file --single-object-resolution=true --external-calls=over-approx --max-depth=1024 --debug-print-instructions=all:file --entry-point=" + functionName + " --cuda-type=" + functionType + " --func-config=" + jsonFile  + " --jindex=" + llvm::utostr(i);
+    std::string command = "klee --disable-verify --warnings-only-to-file --single-object-resolution=true --external-calls=over-approx --max-depth=1024 --entry-point=" + functionName + " --cuda-type=" + functionType + " --func-config=" + jsonFile  + " --jindex=" + llvm::utostr(i);
     if (!outputDir.empty()) {
         command += " --output-dir="+outputDir;
     }
@@ -452,6 +473,7 @@ void runKLEECommand(const std::string &functionName, const std::string &function
     if (!SymLoop) {
         command += " --sym-loop=false";
     }
+    command += getKLEEExtraArgs();
     command += " " + filePath;
     std::cout << "running " << command << "\n";
 
@@ -472,7 +494,7 @@ void runKLEECommand(const std::string &functionName, const std::string &function
 
 void runKLEECommand(const std::string &functionName, const std::string &functionType, const std::string &filePath, const std::string &outputDir="") {
     // Run KLEE command with callerFunctionName as entry-point
-    std::string command = "klee --disable-verify --warnings-only-to-file --single-object-resolution=true --external-calls=over-approx --max-depth=1024 --debug-print-instructions=all:file --entry-point=" + functionName + " --cuda-type=" + functionType;
+    std::string command = "klee --disable-verify --warnings-only-to-file --single-object-resolution=true --external-calls=over-approx --max-depth=1024 --entry-point=" + functionName + " --cuda-type=" + functionType;
     if (!outputDir.empty()) {
         command += " --output-dir="+outputDir;
     }
@@ -487,6 +509,7 @@ void runKLEECommand(const std::string &functionName, const std::string &function
     if (!SymLoop) {
         command += " --sym-loop=false";
     }
+    command += getKLEEExtraArgs();
     command += " " + filePath;
     std::cout << "running " << command << "\n";
 

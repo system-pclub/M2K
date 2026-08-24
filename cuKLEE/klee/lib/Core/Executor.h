@@ -498,7 +498,7 @@ private:
   const InstructionInfo & getLastNonKleeInternalInstruction(const ExecutionState &state,
       llvm::Instruction** lastInstruction);
 
-  void storeBuggyQuery(ExecutionState &state, StateTerminationType reason, std::string message, unsigned sourceLine, unsigned assemblyLine);
+  void storeBuggyQuery(ExecutionState &state, StateTerminationType reason, std::string message, int sourceLine, unsigned assemblyLine);
   /// Remove state from queue and delete state. This function should only be
   /// used in the termination functions below.
   void terminateState(ExecutionState &state, StateTerminationType reason);
