@@ -21,3 +21,4 @@ evaluation/section-6-1-bug-detection/small_dataset_results
 evaluation/section-6-2-coverage/cuKLEE/log-*
 evaluation/section-6-2-coverage/cuKLEE/output-*
 evaluation/section-6-3-rationality/wo_*
+evaluation/section-6-1-bug-detection/intermediate_results/research_paper/validation

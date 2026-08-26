@@ -135,6 +135,11 @@ cl::opt<bool>
                  cl::desc("symbolize loop index (default=true)."),
 		 cl::init(true));
 
+cl::opt<int>
+  LoopSymMax("loop-max",
+                 cl::desc("symbolize loop index if the iteration count is not constant or larger than this value (default=8)."),
+		 cl::init(8));
+
 /*** Misc options ***/
 cl::opt<bool> SingleObjectResolution(
     "single-object-resolution",
@@ -489,7 +494,6 @@ unsigned dumpStates = 0, dumpExecutionTree = 0;
 int KLoopInfo::counter = 0;
 int Executor::kernelConfigCounter = 0;
 static const int largeSymbolSize = 39973;
-static const int loopSymMax = 8;
 
 Executor::Executor(LLVMContext &ctx, const InterpreterOptions &opts,
                    InterpreterHandler *ih)
@@ -1918,72 +1922,72 @@ std::string Executor::getSymName(ExecutionState &state, const MemoryObject *mo, 
 
 void Executor::executeCall(ExecutionState &state, KInstruction *ki, Function *f,
                            std::vector<ref<Expr>> &arguments) {
-  // if (f->getName() == "_ZN4vllm10ScalarType7from_idEl" && arguments.size() == 1) {
-  //   ref<Expr> id = arguments[0];
-  //   if (id->getWidth() != Expr::Int64)
-  //     id = ZExtExpr::create(id, Expr::Int64);
+  if (f->getName() == "_ZN4vllm10ScalarType7from_idEl" && arguments.size() == 1) {
+    ref<Expr> id = arguments[0];
+    if (id->getWidth() != Expr::Int64)
+      id = ZExtExpr::create(id, Expr::Int64);
 
-  //   ref<Expr> exponent = ExtractExpr::create(id, 0, Expr::Int8);
-  //   ref<Expr> mantissa = ExtractExpr::create(id, 8, Expr::Int8);
-  //   ref<Expr> signed_ = ZExtExpr::create(ExtractExpr::create(id, 16, Expr::Bool), Expr::Int8);
-  //   ref<Expr> bias = ExtractExpr::create(id, 17, Expr::Int32);
-  //   ref<Expr> finiteValuesOnly = ZExtExpr::create(ExtractExpr::create(id, 49, Expr::Bool), Expr::Int8);
-  //   ref<Expr> nanRepr = ExtractExpr::create(id, 50, Expr::Int8);
+    ref<Expr> exponent = ExtractExpr::create(id, 0, Expr::Int8);
+    ref<Expr> mantissa = ExtractExpr::create(id, 8, Expr::Int8);
+    ref<Expr> signed_ = ZExtExpr::create(ExtractExpr::create(id, 16, Expr::Bool), Expr::Int8);
+    ref<Expr> bias = ExtractExpr::create(id, 17, Expr::Int32);
+    ref<Expr> finiteValuesOnly = ZExtExpr::create(ExtractExpr::create(id, 49, Expr::Bool), Expr::Int8);
+    ref<Expr> nanRepr = ExtractExpr::create(id, 50, Expr::Int8);
 
-  //   ref<Expr> low64 = ConcatExpr::create(
-  //       bias,
-  //       ConcatExpr::create(
-  //           ConstantExpr::create(0, Expr::Int8),
-  //           ConcatExpr::create(signed_,
-  //                              ConcatExpr::create(mantissa, exponent))));
-  //   ref<Expr> high32 = ConcatExpr::create(
-  //       ConstantExpr::create(0, Expr::Int16),
-  //       ConcatExpr::create(nanRepr, finiteValuesOnly));
-  //   bindLocal(ki, state, ConcatExpr::create(high32, low64));
-  //   return;
-  // }
+    ref<Expr> low64 = ConcatExpr::create(
+        bias,
+        ConcatExpr::create(
+            ConstantExpr::create(0, Expr::Int8),
+            ConcatExpr::create(signed_,
+                               ConcatExpr::create(mantissa, exponent))));
+    ref<Expr> high32 = ConcatExpr::create(
+        ConstantExpr::create(0, Expr::Int16),
+        ConcatExpr::create(nanRepr, finiteValuesOnly));
+    bindLocal(ki, state, ConcatExpr::create(high32, low64));
+    return;
+  }
 
-  // if (f->getName() == "_ZNK4vllm10ScalarTypeeqERKS0_" && arguments.size() == 2) {
-  //   bool success;
-  //   ObjectPair leftOp;
-  //   if (!state.addressSpace.resolveOne(state, solver.get(), arguments[0], leftOp, success) || !success) {
-  //     terminateStateOnProgramError(state, "ScalarType::operator==: do not find left ScalarType object",
-  //                                  StateTerminationType::ReportError);
-  //     return;
-  //   }
+  if (f->getName() == "_ZNK4vllm10ScalarTypeeqERKS0_" && arguments.size() == 2) {
+    bool success;
+    ObjectPair leftOp;
+    if (!state.addressSpace.resolveOne(state, solver.get(), arguments[0], leftOp, success) || !success) {
+      terminateStateOnProgramError(state, "ScalarType::operator==: do not find left ScalarType object",
+                                   StateTerminationType::ReportError);
+      return;
+    }
 
-  //   ObjectPair rightOp;
-  //   if (!state.addressSpace.resolveOne(state, solver.get(), arguments[1], rightOp, success) || !success) {
-  //     terminateStateOnProgramError(state, "ScalarType::operator==: do not find right ScalarType object",
-  //                                  StateTerminationType::ReportError);
-  //     return;
-  //   }
+    ObjectPair rightOp;
+    if (!state.addressSpace.resolveOne(state, solver.get(), arguments[1], rightOp, success) || !success) {
+      terminateStateOnProgramError(state, "ScalarType::operator==: do not find right ScalarType object",
+                                   StateTerminationType::ReportError);
+      return;
+    }
 
-  //   ref<Expr> leftBaseOffset = leftOp.first->getOffsetExpr(arguments[0]);
-  //   ref<Expr> rightBaseOffset = rightOp.first->getOffsetExpr(arguments[1]);
-  //   auto readScalarTypeField = [](const ObjectPair &op, ref<Expr> baseOffset,
-  //                                 uint64_t offset, Expr::Width width) -> ref<Expr> {
-  //     ref<Expr> fieldOffset = AddExpr::create(baseOffset,
-  //                                             ConstantExpr::create(offset, Expr::Int64));
-  //     return op.second->read(fieldOffset, width);
-  //   };
+    ref<Expr> leftBaseOffset = leftOp.first->getOffsetExpr(arguments[0]);
+    ref<Expr> rightBaseOffset = rightOp.first->getOffsetExpr(arguments[1]);
+    auto readScalarTypeField = [](const ObjectPair &op, ref<Expr> baseOffset,
+                                  uint64_t offset, Expr::Width width) -> ref<Expr> {
+      ref<Expr> fieldOffset = AddExpr::create(baseOffset,
+                                              ConstantExpr::create(offset, Expr::Int64));
+      return op.second->read(fieldOffset, width);
+    };
 
-  //   ref<Expr> result;
-  //   const std::pair<uint64_t, Expr::Width> fields[] = {
-  //       {1, Expr::Int8}, {0, Expr::Int8}, {4, Expr::Int32},
-  //       {2, Expr::Int8}, {8, Expr::Int8}, {9, Expr::Int8}};
+    ref<Expr> result;
+    const std::pair<uint64_t, Expr::Width> fields[] = {
+        {1, Expr::Int8}, {0, Expr::Int8}, {4, Expr::Int32},
+        {2, Expr::Int8}, {8, Expr::Int8}, {9, Expr::Int8}};
 
-  //   for (const auto &field : fields) {
-  //     ref<Expr> left = readScalarTypeField(leftOp, leftBaseOffset, field.first, field.second);
-  //     ref<Expr> right = readScalarTypeField(rightOp, rightBaseOffset, field.first, field.second);
+    for (const auto &field : fields) {
+      ref<Expr> left = readScalarTypeField(leftOp, leftBaseOffset, field.first, field.second);
+      ref<Expr> right = readScalarTypeField(rightOp, rightBaseOffset, field.first, field.second);
 
-  //     ref<Expr> eq = EqExpr::create(left, right);
-  //     result = result.isNull() ? eq : AndExpr::create(result, eq);
-  //   }
+      ref<Expr> eq = EqExpr::create(left, right);
+      result = result.isNull() ? eq : AndExpr::create(result, eq);
+    }
 
-  //   bindLocal(ki, state, result);
-  //   return;
-  // }
+    bindLocal(ki, state, result);
+    return;
+  }
 
   if (f->getName().find("c1013intrusive_ptrINS_10TensorImplENS_19UndefinedTensorImpl")!=std::string::npos || 
       f->getName().find("at10TensorBase19unsafeGetTensorImplEv")!=std::string::npos) {
@@ -6139,6 +6143,17 @@ bool isBinaryOpSigned(Instruction *i){
   return false;
 }
 
+static bool isTrustedCUBBlockHeader(const KInstruction *ki) {
+  if (!ki || !ki->info)
+    return false;
+
+  llvm::StringRef file = ki->info->file;
+
+  return file.endswith("cub/block/block_exchange.cuh") ||
+         file.endswith("cub/block/block_store.cuh") ||
+         file.endswith("cub/block/block_load.cuh");
+}
+
 void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
   Instruction *i = ki->inst;
   if (!isLoopCheck)
@@ -6251,9 +6266,9 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
       assert(bi->getCondition() == bi->getOperand(0) &&
              "Wrong operand index!");
       
-      
       ref<Expr> cond = eval(ki, 0, state).value;
       cond = optimizer.optimizeExpr(cond, false);
+      bool isCUBHeader = isTrustedCUBBlockHeader(ki);
 
       BasicBlock *currentBlock = bi->getParent();
       auto it = state.loopInfoMap.find(currentBlock);
@@ -6263,7 +6278,7 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
         if (state.loopInfoMap[currentBlock]->times>0) {
           state.loopInfoMap[currentBlock]->times = 0;
           KLoopInfo *loopInfo = state.loopInfoMap[currentBlock];
-          checkDataRace(state, loopInfo);
+          if (!isCUBHeader) checkDataRace(state, loopInfo);
           if (Expr::isRelatedWithLoopIndex(loopInfo->cond, loopInfo->indexExpr)) {
             ObjectPair op;
             bool success;
@@ -6286,10 +6301,10 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
         state.loopInfoMap[currentBlock]->cond = cond;
       } 
       else if (state.loopInfoMap.find(currentBlock)!=state.loopInfoMap.end() && it->second != nullptr){
-        if (state.loopInfoMap[currentBlock]->executedTimes>=loopSymMax){
+        if (state.loopInfoMap[currentBlock]->executedTimes>=LoopSymMax){
           state.loopInfoMap[currentBlock]->executedTimes = 0;
           KLoopInfo *loopInfo = state.loopInfoMap[currentBlock];
-          checkDataRace(state, loopInfo);
+          if (!isCUBHeader) checkDataRace(state, loopInfo);
           transferToBasicBlock(bi->getSuccessor(1), bi->getParent(), state);
           break;
         }
@@ -6302,7 +6317,7 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
       }
 
       if (it!=state.loopInfoMap.end() && it->second != nullptr && state.loopInfoMap[currentBlock]->indexExpr.isNull() && branches.second) {
-        checkDataRace(*branches.second, state.loopInfoMap[currentBlock]);
+        if (!isCUBHeader) checkDataRace(*branches.second, state.loopInfoMap[currentBlock]);
         branches.second->loopInfoMap[currentBlock]->times = 0;
         branches.second->loopInfoMap[currentBlock]->indexExpr = nullptr;
       }
@@ -6813,7 +6828,7 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
     os.flush(); // optional, os.str() also works
     bool hasTemp = exprStr.find("temp_storage") != std::string::npos;
     
-    if (isLoopCheck || hasTemp) {
+    if (isLoopCheck || hasTemp || isTrustedCUBBlockHeader(ki)) {
       bindLocal(ki, state, result);
       break;
     }
@@ -6836,14 +6851,14 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
       if (state.symbolicArrayMap.find(arrayName) != state.symbolicArrayMap.end()) {
         SymArrayMemoryObject *symmo = state.symbolicArrayMap[arrayName];
         if (symmo->maxVal.isNull()) {
-          if (auto add_expr_con = dyn_cast<ConstantExpr>(add_expr)) {
-            if (add_expr_con->getZExtValue() <= 1) {
-              bindLocal(ki, state, result);
-              break;
-            }
-          }
-          // bindLocal(ki, state, result);
-          // break;
+          // if (auto add_expr_con = dyn_cast<ConstantExpr>(add_expr)) {
+          //   if (add_expr_con->getZExtValue() <= 1) {
+          //     bindLocal(ki, state, result);
+          //     break;
+          //   }
+          // }
+          bindLocal(ki, state, result);
+          break;
         }
       }
       if (arrayName.find("temp_storage") != std::string::npos) {
@@ -6869,8 +6884,7 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
       llvm::Type *resultType = binOp->getType();
       if (resultType->isIntegerTy()) {
         unsigned bitWidth = resultType->getIntegerBitWidth();
-        if (bitWidth <= 32) {           
-          
+        if (bitWidth <= 32) {                     
           ref<Expr> overflowCheck;
           ref<Expr> maxValueExpr;
           ref<Expr> realRes;
@@ -6931,32 +6945,42 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
     ref<Expr> left = eval(ki, 0, state).value;
     ref<Expr> right = eval(ki, 1, state).value;
     ref<Expr> result = MulExpr::create(left, right);
+
+    // std::string exprStr;
+    // llvm::raw_string_ostream os(exprStr);
+    // os << result;
+    // os.flush(); // optional, os.str() also works
+    // bool hasTemp = exprStr.find("temp_storage") != std::string::npos;
     
-    if (isLoopCheck) {
+    if (isLoopCheck || isTrustedCUBBlockHeader(ki)) {
       bindLocal(ki, state, result);
       break;
     }
 
-    // std::string arrayName = "";
-    // const Array *array0 = nullptr;
-    // ref<Expr> index0 = ConcatExpr::getArrayIndex(left, &array0);
-    // const Array *array1 = nullptr;
-    // ref<Expr> index1 = ConcatExpr::getArrayIndex(right, &array1);
-    // if (!index0.isNull()) {
-    //   arrayName = array0->name;
-    // } else if (!index1.isNull()) {
-    //   arrayName = array1->name;
-    // }
+    std::string arrayName = "";
+    const Array *array0 = nullptr;
+    ref<Expr> index0 = ConcatExpr::getArrayIndex(left, &array0);
+    const Array *array1 = nullptr;
+    ref<Expr> index1 = ConcatExpr::getArrayIndex(right, &array1);
+    if (!index0.isNull()) {
+      arrayName = array0->name;
+    } else if (!index1.isNull()) {
+      arrayName = array1->name;
+    }
 
-    // if (!arrayName.empty()) {
-    //   if (state.symbolicArrayMap.find(arrayName) != state.symbolicArrayMap.end()) {
-    //     SymArrayMemoryObject *symmo = state.symbolicArrayMap[arrayName];
-    //     if (symmo->maxVal.isNull()) {
-    //       bindLocal(ki, state, result);
-    //       break;
-    //     }
-    //   }
-    // }
+    if (!arrayName.empty()) {
+      if (state.symbolicArrayMap.find(arrayName) != state.symbolicArrayMap.end()) {
+        SymArrayMemoryObject *symmo = state.symbolicArrayMap[arrayName];
+        if (symmo->maxVal.isNull()) {
+          bindLocal(ki, state, result);
+          break;
+        }
+      }
+      if (arrayName.find("temp_storage") != std::string::npos) {
+        bindLocal(ki, state, result);
+        break;
+      }
+    }
 
     if (const llvm::BinaryOperator *binOp = llvm::dyn_cast<llvm::BinaryOperator>(i)) {
       bool isSigned = binOp->hasNoSignedWrap() || isBinaryOpSigned(i);
@@ -6975,8 +6999,7 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
       llvm::Type *resultType = binOp->getType();
       if (resultType->isIntegerTy()) {
         unsigned bitWidth = resultType->getIntegerBitWidth();
-        if (bitWidth <= 32) { 
-          
+        if (bitWidth <= 32) {     
           ref<Expr> overflowCheck;
           ref<Expr> maxValueExpr;
           ref<Expr> realRes;
@@ -7166,7 +7189,7 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
           }
         }
 
-        if (std::abs(rightV-leftV) <= loopSymMax) {
+        if (std::abs(rightV-leftV) <= LoopSymMax) {
           auto it = state.loopInfoMap.find(currentBlock);
           if (it != state.loopInfoMap.end() && it->second != nullptr) {
             it->second->indexExpr = nullptr;
@@ -7236,7 +7259,7 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
         if (leftV < rightV)
           isLarge = false;
 
-        if (std::abs(rightV-leftV) <= loopSymMax || (rightV && leftV)) {
+        if (std::abs(rightV-leftV) <= LoopSymMax || (rightV && leftV)) {
           auto it = state.loopInfoMap.find(currentBlock);
           if (it != state.loopInfoMap.end() && it->second != nullptr) {
             it->second->indexExpr = nullptr;
@@ -7302,7 +7325,7 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
         auto rightCE = dyn_cast<ConstantExpr>(right);
         int rightV = rightCE->getZExtValue();
 
-        if (std::abs(rightV-leftV) <= loopSymMax) {
+        if (std::abs(rightV-leftV) <= LoopSymMax) {
           auto it = state.loopInfoMap.find(currentBlock);
           if (it != state.loopInfoMap.end() && it->second != nullptr) {
             it->second->indexExpr = nullptr;
@@ -7357,7 +7380,7 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
         auto rightCE = dyn_cast<ConstantExpr>(right);
         int rightV = rightCE->getZExtValue();
 
-        if (std::abs(rightV-leftV) <= loopSymMax) {
+        if (std::abs(rightV-leftV) <= LoopSymMax) {
           auto it = state.loopInfoMap.find(currentBlock);
           if (it != state.loopInfoMap.end() && it->second != nullptr) {
             it->second->indexExpr = nullptr;
@@ -7412,7 +7435,7 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
         auto rightCE = dyn_cast<ConstantExpr>(right);
         int rightV = rightCE->getZExtValue();
 
-        if (std::abs(rightV-leftV) <= loopSymMax) {
+        if (std::abs(rightV-leftV) <= LoopSymMax) {
           auto it = state.loopInfoMap.find(currentBlock);
           if (it != state.loopInfoMap.end() && it->second != nullptr) {
             it->second->indexExpr = nullptr;
@@ -7466,7 +7489,7 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
         auto rightCE = dyn_cast<ConstantExpr>(right);
         int rightV = rightCE->getZExtValue();
 
-        if (std::abs(rightV-leftV) <= loopSymMax) {
+        if (std::abs(rightV-leftV) <= LoopSymMax) {
           auto it = state.loopInfoMap.find(currentBlock);
           if (it != state.loopInfoMap.end() && it->second != nullptr) {
             it->second->indexExpr = nullptr;
@@ -7527,7 +7550,7 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
         auto rightCE = dyn_cast<ConstantExpr>(right);
         int rightV = rightCE->getZExtValue();
 
-        if (std::abs(rightV-leftV) <= loopSymMax) {
+        if (std::abs(rightV-leftV) <= LoopSymMax) {
           auto it = state.loopInfoMap.find(currentBlock);
           if (it != state.loopInfoMap.end() && it->second != nullptr) {
             it->second->indexExpr = nullptr;
@@ -7587,7 +7610,7 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
         auto rightCE = dyn_cast<ConstantExpr>(right);
         int rightV = rightCE->getZExtValue();
 
-        if (std::abs(rightV-leftV) <= loopSymMax) {
+        if (std::abs(rightV-leftV) <= LoopSymMax) {
           auto it = state.loopInfoMap.find(currentBlock);
           if (it != state.loopInfoMap.end() && it->second != nullptr) {
             it->second->indexExpr = nullptr;
@@ -7648,7 +7671,7 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
         auto rightCE = dyn_cast<ConstantExpr>(right);
         int rightV = rightCE->getZExtValue();
 
-        if (std::abs(rightV-leftV) <= loopSymMax) {
+        if (std::abs(rightV-leftV) <= LoopSymMax) {
           auto it = state.loopInfoMap.find(currentBlock);
           if (it != state.loopInfoMap.end() && it->second != nullptr) {
             it->second->indexExpr = nullptr;
@@ -7708,7 +7731,7 @@ void Executor::executeInstruction(ExecutionState &state, KInstruction *ki) {
         auto rightCE = dyn_cast<ConstantExpr>(right);
         int rightV = rightCE->getZExtValue();
 
-        if (std::abs(rightV-leftV) <= loopSymMax) {
+        if (std::abs(rightV-leftV) <= LoopSymMax) {
           auto it = state.loopInfoMap.find(currentBlock);
           if (it != state.loopInfoMap.end() && it->second != nullptr) {
             it->second->indexExpr = nullptr;
@@ -14830,7 +14853,7 @@ void Executor::executeMemoryOperation(ExecutionState &state,
           }
           if (isLoadIr && bytes > 1 && bytes <=8 && (!parentFunction || !isMemFuncName(parentFunction->getName().str()))) {
             ref<ReadExpr> readExpr = ReadExpr::extractReadExpr(result);
-            if (readExpr && (readExpr->updates.root->name.find("const_arr")!=std::string::npos || readExpr->updates.root->name.find("sym_arr")!=std::string::npos)) {
+            if (readExpr && readExpr->updates.root->name.find("const_arr") != std::string::npos) {
               llvm::Type *type = target->inst->getType();
               if (type->isIntegerTy()) {
                 std::string aName = readExpr->updates.root->name;
@@ -15011,7 +15034,7 @@ void Executor::executeMemoryOperation(ExecutionState &state,
         }
         if (isLoadIr && bytes > 1 && bytes <= 8 && (!parentFunction || !isMemFuncName(parentFunction->getName().str()))) {
           ref<ReadExpr> readExpr = ReadExpr::extractReadExpr(result);
-          if (readExpr && (readExpr->updates.root->name.find("const_arr")!=std::string::npos || readExpr->updates.root->name.find("sym_arr")!=std::string::npos)) {
+          if (readExpr && readExpr->updates.root->name.find("const_arr") != std::string::npos) {
             llvm::Type *type = target->inst->getType();
             if (type->isIntegerTy()) {
               std::string aName = readExpr->updates.root->name;

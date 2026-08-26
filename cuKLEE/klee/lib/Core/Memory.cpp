@@ -25,7 +25,10 @@
 DISABLE_WARNING_PUSH
 DISABLE_WARNING_DEPRECATED_DECLARATIONS
 #include "llvm/IR/Function.h"
+#include "llvm/IR/GlobalVariable.h"
 #include "llvm/IR/Instruction.h"
+#include "llvm/IR/Instructions.h"
+#include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Value.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/raw_ostream.h"
@@ -174,47 +177,15 @@ const UpdateList &ObjectState::getUpdates() const {
   // Constant arrays are created lazily.
   if (!updates.root) {
     static unsigned id = 0;
-
-    if (size > 0 && size <= 32 * 16) {
-      flushRangeForRead(0, size);
-
-      // Collect the list of writes, with the oldest writes first.
-      unsigned NumWrites = updates.head ? updates.head->getSize() : 0;
-      std::vector<std::pair<ref<Expr>, ref<Expr>>> Writes(NumWrites);
-      const auto *un = updates.head.get();
-      for (unsigned i = NumWrites; i != 0; un = un->next.get()) {
-        --i;
-        Writes[i] = std::make_pair(un->index, un->value);
-      }
-
-      std::vector<ref<ConstantExpr>> Contents(size);
+    if (shouldPreserveConstantArrayValues()) {
+      std::vector<ref<ConstantExpr>> contents(size);
       for (unsigned i = 0, e = size; i != e; ++i)
-        Contents[i] = ConstantExpr::create(0, Expr::Int8);
-
-      unsigned Begin = 0, End = Writes.size();
-      for (; Begin != End; ++Begin) {
-        ConstantExpr *Index = dyn_cast<ConstantExpr>(Writes[Begin].first);
-        if (!Index)
-          break;
-
-        ConstantExpr *Value = dyn_cast<ConstantExpr>(Writes[Begin].second);
-        if (!Value)
-          break;
-
-        uint64_t ConcreteIndex = Index->getZExtValue();
-        if (ConcreteIndex >= size)
-          break;
-
-        Contents[ConcreteIndex] = Value;
-      }
+        contents[i] = ConstantExpr::create(concreteStore[i], Expr::Int8);
 
       const Array *array = getArrayCache()->CreateArray(
-          "const_arr" + llvm::utostr(++id), size, false, &Contents[0],
-          &Contents[0] + Contents.size());
-      updates = UpdateList(array, 0);
-
-      for (; Begin != End; ++Begin)
-        updates.extend(Writes[Begin].first, Writes[Begin].second);
+          "const_arr" + llvm::utostr(++id), size, false, contents.data(),
+          contents.data() + contents.size());
+      updates = UpdateList(array, updates.head);
     } else {
       const Array *array = getArrayCache()->CreateArray(
           "sym_arr" + llvm::utostr(++id), size, false);
@@ -224,6 +195,49 @@ const UpdateList &ObjectState::getUpdates() const {
   }
 
   return updates;
+}
+
+bool ObjectState::shouldPreserveConstantArrayValues() const {
+  if (size == 0 || size > 32 * 16 || updates.head)
+    return false;
+
+  const Type *elementType = nullptr;
+  if (const auto *global = object ? dyn_cast<GlobalVariable>(object->allocSite) : nullptr) {
+    if (!global->hasInitializer())
+      return false;
+    elementType = global->getValueType();
+  } else if (const auto *alloca = object ? dyn_cast<AllocaInst>(object->allocSite) : nullptr) {
+    elementType = alloca->getAllocatedType();
+  } else {
+    return false;
+  }
+
+  bool isArray = false;
+  while (const auto *arrayType = dyn_cast<ArrayType>(elementType)) {
+    isArray = true;
+    elementType = arrayType->getElementType();
+  }
+  if (!isArray)
+    return false;
+
+  if (!elementType)
+    return false;
+
+  for (unsigned i = 0, e = size; i != e; ++i) {
+    if (!isByteConcrete(i))
+      return false;
+  }
+
+  for (const auto *un = updates.head.get(); un; un = un->next.get()) {
+    const auto *index = dyn_cast<ConstantExpr>(un->index);
+    const auto *value = dyn_cast<ConstantExpr>(un->value);
+    if (!index || !value)
+      return false;
+    if (index->getZExtValue() >= size || value->getWidth() != Expr::Int8)
+      return false;
+  }
+
+  return true;
 }
 
 bool ObjectState::hasArray() const {

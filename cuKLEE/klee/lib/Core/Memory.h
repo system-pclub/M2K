@@ -302,6 +302,7 @@ private:
 
   void fastRangeCheckOffset(ref<Expr> offset, unsigned *base_r, 
                             unsigned *size_r) const;
+  bool shouldPreserveConstantArrayValues() const;
   void flushRangeForRead(unsigned rangeBase, unsigned rangeSize) const;
   void flushRangeForWrite(unsigned rangeBase, unsigned rangeSize);
 
