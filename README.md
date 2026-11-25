@@ -1,7 +1,7 @@
 <h1 align="center">M2K</h1>
 
 <p align="center">
-  <b>Find bugs in the CUDA kernels of LLM inference frameworks and the custom kernels that ship with models.</b>
+  <b>Find bugs in the CUDA kernels used in LLM inference.</b>
 </p>
 
 <p align="center">
