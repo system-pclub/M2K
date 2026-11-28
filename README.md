@@ -20,29 +20,44 @@
 
 ---
 
-M2K is a verification tool for the CUDA kernels behind LLM inference. It checks the kernels in serving frameworks such as **vLLM** and **SGLang**, as well as the custom kernels that ship with models themselves, for example as remote code on the Hugging Face Hub or in the code released with research papers. M2K detects four classes of bugs:
+M2K finds bugs in the CUDA kernels that LLM inference runs on, both the kernels inside serving frameworks such as **vLLM** and **SGLang** and the custom kernels that ship with models. It detects **integer overflows**, **out-of-bounds accesses**, **null pointer dereferences**, and **data races**.
 
-- integer overflow
-- out-of-bounds memory access
-- null pointer dereference
-- data race
-
-Whether a kernel is buggy depends on the inputs it actually receives, and those inputs are determined by the model: its config, the batch size, and the sequence length. **M2K makes this model-kernel interface explicit.** For each kernel, it infers how the kernel's arguments relate to the model config and request shape, symbolically executes the kernel under those constraints, and validates each report by running the model with a config and input that trigger the bug.
-
-## Highlights
-
-- **Covers frameworks and models.** M2K checks the kernels in inference frameworks (vLLM, SGLang) and the custom kernels shipped with models (Hugging Face Hub remote code, research-paper models).
-- **Finds real bugs.** Bugs found by M2K have been confirmed and fixed by vLLM and SGLang developers, and one was assigned [CVE-2026-73558](https://github.com/vllm-project/vllm/security/advisories/GHSA-7m6h-x95x-82q5).
-- **Reports you can reproduce.** Each validated report comes with the model config, batch size, and sequence length that trigger it in the real framework.
-- **No GPU needed for detection.**
+Whether a kernel misbehaves depends on the inputs the model gives it. **M2K makes this model-kernel interface explicit**: it infers how each kernel's arguments depend on the model config and request shape, symbolically executes the kernel under those constraints, and validates every report on the real model.
 
 ## Bugs Found by M2K
 
-M2K has found bugs in vLLM, SGLang, and custom kernels from Hugging Face models. Developers have confirmed and fixed many of them, and one led to the vLLM security advisory [GHSA-7m6h-x95x-82q5](https://github.com/vllm-project/vllm/security/advisories/GHSA-7m6h-x95x-82q5) (CVE-2026-73558).
+So far, M2K has found **60 bugs**: **48 in vLLM**, **8 in SGLang**, and **4 in custom kernels shipped with Hugging Face models**. Of these, 35 are integer overflows and 25 are out-of-bounds accesses. **43 have been confirmed or fixed by developers** (17 of them fixed), and an integer overflow in vLLM's activation kernels was assigned **CVE-2026-73558**. The table below lists the bugs we have reported; one report may cover several kernels in the same file.
 
-📋 **See the [M2K Bug Tracker](https://docs.google.com/spreadsheets/d/1DL56JueoLBoU6qtJmp_TLZ_iiUjSksNCZ2tLUFQvaNg/edit?usp=sharing) for the full, up-to-date list, with links to each issue, fix PR, and security advisory.**
+| Framework | Bug Type | Report | Status | Security Advisory |
+| :--- | :--- | :--- | :--- | :--- |
+| **vLLM** | Integer overflow | [#42860](https://github.com/vllm-project/vllm/issues/42860) | ✅ Fixed ([#49660](https://github.com/vllm-project/vllm/pull/49660)) | [GHSA-7m6h-x95x-82q5](https://github.com/vllm-project/vllm/security/advisories/GHSA-7m6h-x95x-82q5)<br>[CVE-2026-73558](https://www.cve.org/CVERecord?id=CVE-2026-73558) |
+| **vLLM** | Integer overflow | [#40905](https://github.com/vllm-project/vllm/issues/40905) | ✅ Fixed ([#41617](https://github.com/vllm-project/vllm/pull/41617)) | — |
+| **vLLM** | Integer overflow | [#22419](https://github.com/vllm-project/vllm/issues/22419) | ✅ Fixed | — |
+| **vLLM** | Integer overflow | [#27911](https://github.com/vllm-project/vllm/issues/27911) | ✅ Fixed | — |
+| **vLLM** | Integer overflow | [#42862](https://github.com/vllm-project/vllm/issues/42862) | 🟢 Confirmed | — |
+| **vLLM** | Integer overflow | [#43390](https://github.com/vllm-project/vllm/issues/43390) | 🟢 Confirmed | — |
+| **vLLM** | Integer overflow | [#45373](https://github.com/vllm-project/vllm/issues/45373) | 🟢 Confirmed | — |
+| **vLLM** | Integer overflow | [#45469](https://github.com/vllm-project/vllm/issues/45469) | 🟢 Confirmed | — |
+| **vLLM** | Integer overflow | [#45500](https://github.com/vllm-project/vllm/issues/45500) | 🟢 Confirmed | — |
+| **vLLM** | Integer overflow | [#45884](https://github.com/vllm-project/vllm/issues/45884) | 🟢 Confirmed | — |
+| **vLLM** | Out-of-bounds | [#45377](https://github.com/vllm-project/vllm/issues/45377) | 🟢 Confirmed | — |
+| **vLLM** | Out-of-bounds | [#45380](https://github.com/vllm-project/vllm/issues/45380) | 🟢 Confirmed | — |
+| **vLLM** | Out-of-bounds | [#45462](https://github.com/vllm-project/vllm/issues/45462) | 🟢 Confirmed | — |
+| **vLLM** | Out-of-bounds | [#45492](https://github.com/vllm-project/vllm/issues/45492) | 🟢 Confirmed | — |
+| **vLLM** | Out-of-bounds | [#45496](https://github.com/vllm-project/vllm/issues/45496) | 🟢 Confirmed | — |
+| **vLLM** | Out-of-bounds | [#27917](https://github.com/vllm-project/vllm/issues/27917) | 🟢 Confirmed | — |
+| **vLLM** | Out-of-bounds | [#27915](https://github.com/vllm-project/vllm/issues/27915) | 📨 Reported | — |
+| **vLLM** | Out-of-bounds | [#27810](https://github.com/vllm-project/vllm/issues/27810) | ♻️ Code refactored | — |
+| **Qwen/Qwen-1_8B-Chat** <sub>(Hugging Face)</sub> | Integer overflow | Reported privately | 🟢 Confirmed | — |
+| **SGLang** | Integer overflow | [#29597](https://github.com/sgl-project/sglang/issues/29597) | 🟢 Confirmed | — |
+| **SGLang** | Integer overflow | [#29602](https://github.com/sgl-project/sglang/issues/29602) | 🟢 Confirmed | — |
+| **SGLang** | Integer overflow | [#29603](https://github.com/sgl-project/sglang/issues/29603) | 🟢 Confirmed | — |
+| **SGLang** | Integer overflow | [#29605](https://github.com/sgl-project/sglang/issues/29605) | 🟢 Confirmed | — |
+| **SGLang** | Integer overflow | [#29606](https://github.com/sgl-project/sglang/issues/29606) | 🟢 Confirmed | — |
 
-If you use M2K and find a bug, we would love to add it. Please open an issue.
+<sub>✅ Fixed: fix merged upstream · 🟢 Confirmed: acknowledged by developers · 📨 Reported: awaiting response · ♻️ Code refactored: the buggy code was removed in a later release</sub>
+
+If you find a bug with M2K, we'd love to add it here. Please open an issue.
 
 ## How It Works
 
@@ -90,7 +105,6 @@ To run the whole pipeline on a model, from call-graph analysis to validation, fo
 | --- | --- |
 | [Getting Started](docs/getting-started.md) | Requirements, installation, an end-to-end walkthrough of every HFProbe and cuKLEE command and its options, troubleshooting |
 | [Artifact Evaluation](docs/artifact-evaluation.md) | Scripts to reproduce every experiment in the SOSP 2026 paper |
-| [Bug Tracker](https://docs.google.com/spreadsheets/d/1DL56JueoLBoU6qtJmp_TLZ_iiUjSksNCZ2tLUFQvaNg/edit?usp=sharing) | All bugs found by M2K|
 
 ## Citation
 
